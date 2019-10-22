@@ -1,0 +1,17 @@
+# Garbage (ignored everywhere)
+*.map
+*.db
+
+# Ignoring everything at the root of the project
+/*
+
+# Project files
+!/.gitignore
+!/config.js
+!/gulpfile.js
+!/package.json
+!/README.md
+
+# Project folders
+!/dev
+!/dist
