@@ -24,6 +24,17 @@
 				width: 100vw;
 				background: #313233;
 			}
+
+			.debug {
+				position: fixed;
+				bottom: 10px;
+				left: 10px;
+				padding: 5px;
+				background: #000;
+				color: white;
+				font-family: monospace;
+				user-select: none;
+			}
 		</style>
 
 		<script src='Canvas.js'></script>
@@ -35,6 +46,7 @@
 	<body>
 		<main class='page'>
 			<canvas id='root' class='root'></canvas>
+			<pre id='debug' class='debug'></pre>
 		</main>
 	</body>
 </html>
