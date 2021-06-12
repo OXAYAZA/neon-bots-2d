@@ -8,10 +8,12 @@ function Canvas () {
 
 	this.resize();
 	window.addEventListener( 'resize', this.resize.bind( this ) );
-	setInterval( this.render.bind( this ), 40 );
+	this.render();
 }
 
 Canvas.prototype.render = function () {
+	requestAnimationFrame( this.render.bind( this ) );
+
 	this.ctx.clearRect( 0, 0, this.rect.width, this.rect.height );
 
 	for ( let id in this.objects ) {

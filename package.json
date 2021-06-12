@@ -1,14 +1,14 @@
 {
   "name": "Canvas",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Canvas Sample",
-  "main": "gulpfile.js",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "server": "node server.js"
   },
   "author": "OXAYAZA",
   "license": "UNLICENSED",
   "dependencies": {
-    "tempaw-functions": "2.4.2"
+    "oxyz-express": "1.0.3"
   }
 }
