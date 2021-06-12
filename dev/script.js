@@ -5,34 +5,17 @@ function debug ( data ) {
 
 // Main
 window.addEventListener( 'load', function () {
-	let
-		canvas = new Canvas(),
-		addUnit = function ( event )  {
-			canvas.add( new Unit({
-				x: event.clientX,
-				y: event.clientY,
-				destX: event.clientX,
-				destY: event.clientY,
-				canvas: canvas,
-				speed: ~~(Math.random() * 50) + 1
-			}));
-		};
+	let canvas = new Canvas();
 
-	canvas.node.addEventListener( 'mousedown', function ()  {
-		canvas.node.addEventListener( 'mousemove', addUnit );
-	});
-
-	canvas.node.addEventListener( 'mouseup', function ()  {
-		canvas.node.removeEventListener( 'mousemove', addUnit );
-	});
-
-	canvas.node.addEventListener( 'mousemove', function ( event )  {
-		for ( let id in canvas.objects ) {
-			let unit = canvas.objects[ id ];
-			unit.destX = event.clientX;
-			unit.destY = event.clientY;
-		}
-	});
+	setInterval( () => {
+		canvas.add( new Unit({
+			x: canvas.rect.width / 2,
+			y: canvas.rect.height + 10,
+			destX: Math.random() * canvas.rect.width,
+			destY: Math.random() * canvas.rect.height / 2,
+			canvas: canvas,
+		}));
+	}, 500 );
 
 	setInterval( () => {
 		debug( Object.keys( canvas.objects ).length );
