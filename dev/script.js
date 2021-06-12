@@ -1,3 +1,8 @@
+// Debug
+function debug ( data ) {
+	document.getElementById( 'debug' ).innerText = JSON.stringify( data, null, 2 );
+}
+
 // Main
 window.addEventListener( 'load', function () {
 	let
@@ -28,4 +33,8 @@ window.addEventListener( 'load', function () {
 			unit.destY = event.clientY;
 		}
 	});
+
+	setInterval( () => {
+		debug( Object.keys( canvas.objects ).length );
+	}, 40 );
 });

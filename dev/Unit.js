@@ -11,17 +11,19 @@ Unit.defaults = {
 	y: 0,
 	ax: 0,
 	ay: 0,
-	hp: 400,
-	speed: 20,
+	hp: 100,
+	speed: 10,
 	color: 'hsl( 50, 100%, 50% )',
 
 	points: [
-		{ x: 0, y: 10 },
-		{ x: 5, y: -5 },
-		{ x: -5, y: -5 },
+		{ x: 0, y: 6 },
+		{ x: 2, y: 2 },
+		{ x: 2, y: -4 },
+		{ x: -2, y: -4 },
+		{ x: -2, y: 2 },
 	],
 
-	fPoint: { x: 0, y: -7 },
+	fPoint: { x: 0, y: -5 },
 
 	destX: 0,
 	destY: 0
@@ -51,14 +53,18 @@ Unit.prototype.live = function () {
 };
 
 Unit.prototype.die = function () {
-	for ( let i = 0; i < 50; i++ ) {
+	let explosion = ~~( Math.random() * 360 );
+
+	for ( let i = 0; i < 30; i++ ) {
 		this.canvas.add( new Particle({
 			x: this.x,
 			y: this.y,
-			ax: Math.random() * 6 - 3,
-			ay: Math.random() * 6 - 3,
+			width: 4,
+			height: 4,
+			ax: Math.random() * 20 - 10,
+			ay: Math.random() * 20 - 10,
 			canvas: this.canvas,
-			hue: 0
+			hue: explosion
 		}));
 	}
 
@@ -79,6 +85,8 @@ Unit.prototype.render = function () {
 	this.canvas.add( new Particle({
 		x: this.x + fFinal.x,
 		y: this.y + fFinal.y,
+		width: 4,
+		height: 4,
 		ax: Math.random() * 2 - 1,
 		ay: Math.random() * 2 - 1,
 		canvas: this.canvas
