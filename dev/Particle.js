@@ -22,20 +22,21 @@ Particle.defaults = {
 	va: 0,
 	da: 0,
 	fhp: 50,
-	size: 4,
+	size: 2,
 
 	hue: 24,
 	saturation: 100,
 	lightness: 80,
 
 	points: [
-		{ x: -2, y: -2 },
-		{ x: -2, y: 2 },
-		{ x: 2, y: 2 },
-		{ x: 2, y: -2 },
+		{ x: -1, y: -1 },
+		{ x: -1, y: 1 },
+		{ x: 1, y: 1 },
+		{ x: 1, y: -1 },
 	],
 
 	fPoints: null,
+	fSegments: null,
 	hp: null
 };
 
@@ -56,6 +57,10 @@ Particle.prototype.live = function () {
 	this.a += this.da;
 
 	this.fPoints = this.points.map( ( point ) => {
+		return { x: point.x * this.size, y: point.y * this.size };
+	});
+
+	this.fPoints = this.fPoints.map( ( point ) => {
 		return Particle.rotate( point, this.a );
 	});
 
@@ -63,6 +68,10 @@ Particle.prototype.live = function () {
 		let percantage = this.hp / this.fhp;
 		let tmp = Particle.rotate( point, this.a );
 		return { x: tmp.x * percantage + this.x, y: tmp.y * percantage + this.y };
+	});
+
+	this.fSegments = this.fPoints.map( function ( point, index, points ) {
+		return [ point, points[ ( points.length > index + 1 ) ? index + 1 : 0 ] ];
 	});
 
 	this.hp -= 1;

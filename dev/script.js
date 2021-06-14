@@ -17,19 +17,91 @@ window.addEventListener( 'load', function () {
 		canvas = window.canvas = new Canvas(),
 		unit = null;
 
-	function spawn () {
-		unit = new Unit({
+	function spawnHero () {
+		unit = window.unit = new Unit({
+			canvas: canvas,
+			fhp: 2000,
 			x: canvas.rect.width / 2,
 			y: canvas.rect.height / 2,
 			a: 1.6,
-			canvas: canvas,
 		});
 
 		canvas.add( unit );
 	}
 
-	spawn();
+	function spawnLola () {
+		canvas.add( new Unit({
+			canvas: canvas,
+			x: canvas.rect.width / 2,
+			y: canvas.rect.height * .1,
+			a: 0,
+			v: 3,
+			fhp: 2000,
+			mass: 200,
+			points: [
+				{ x: -10,  y: -10 },
+				{ x: 50,   y: -10 },
+				{ x: 60,  y: 0 },
+				{ x: 50,  y: 10 },
+				{ x: -10,  y: 10 },
+				{ x: 0,  y: 0 }
+			],
+			cb: {
+				live: function () {
+					this.a += .01;
+				},
+				die: spawnLola
+			}
+		}));
+	}
 
+	function spawnDummy () {
+		canvas.add( new Unit({
+			canvas: canvas,
+			x: Math.random() * canvas.rect.width,
+			y: 10,
+			a: 1.6 + ( Math.random() - .5 ),
+			v: 2,
+			fhp: 40,
+			mass: 100,
+			points: [
+				{ x: 20, y: -3 },
+				{ x: 10,   y: -10 },
+				{ x: -10,  y: -10 },
+				{ x: 0,  y: 0 },
+				{ x: -10,  y: 10 },
+				{ x: 10,  y: 10 },
+				{ x: 20, y: 3 }
+			],
+			cb: {
+				live: function () {
+					this.hp -= .1;
+				}
+			}
+		}));
+	}
+
+	function spawnBullet () {
+		canvas.add( new Bullet({
+			canvas: canvas,
+			x: Math.random() * canvas.rect.width,
+			y: canvas.rect.height,
+			a: 1.6,
+			v: -5,
+			fhp: 200
+		}));
+	}
+
+	function spawnParticle () {
+		canvas.add( new Particle({
+			canvas: canvas,
+			x: Math.random() * canvas.rect.width,
+			y: canvas.rect.height,
+			a: 1.6,
+			v: -10,
+			fhp: Math.random() * 500
+		}));
+	}
 
 	document.addEventListener( 'keydown', function ( event ) {
 		if ( event.code === 'KeyW' ) {
@@ -50,7 +122,7 @@ window.addEventListener( 'load', function () {
 
 		if ( event.code === 'KeyR' ) {
 			if ( unit && unit.alive ) unit.die();
-			spawn();
+			spawnHero();
 		}
 
 		if ( event.code === 'Space' ) {
@@ -81,52 +153,11 @@ window.addEventListener( 'load', function () {
 		canvas.render();
 	});
 
-	setInterval( () => {
-		canvas.add( new Unit({
-			canvas: canvas,
-			x: Math.random() * canvas.rect.width,
-			y: 10,
-			a: 1.6,
-			v: 2,
-			fhp: 40,
-			points: [
-				{ x: 20, y: -3 },
-				{ x: 10,   y: -10 },
-				{ x: -10,  y: -10 },
-				{ x: 0,  y: 0 },
-				{ x: -10,  y: 10 },
-				{ x: 10,  y: 10 },
-				{ x: 20, y: 3 }
-			],
-			cb: {
-				live: function () {
-					this.hp -= .1;
-				}
-			}
-		}));
-	}, 500 );
-
-	setInterval( () => {
-		canvas.add( new Bullet({
-			canvas: canvas,
-			x: Math.random() * canvas.rect.width,
-			y: canvas.rect.height,
-			a: 1.6,
-			v: -5,
-			fhp: 200
-		}));
-	}, 100 );
-
-	setInterval( () => {
-		canvas.add( new Particle({
-			canvas: canvas,
-			x: Math.random() * canvas.rect.width,
-			y: canvas.rect.height,
-			a: 1.6,
-			v: -10,
-			fhp: Math.random() * 500
-		}));
-	}, 50 );
+	spawnHero();
+	spawnLola();
+	setInterval( spawnDummy, 500 );
+	setInterval( spawnBullet, 100 );
+	setInterval( spawnParticle, 50 );
 
 	setInterval( () => {
 		debug( {
@@ -143,8 +174,7 @@ window.addEventListener( 'load', function () {
 			reloading: unit.reloading,
 			alive: unit.alive,
 			objects: Object.keys( canvas.objects ).length,
-			units: Object.keys( canvas.units ).length,
-			bullets: Object.keys( canvas.bullets ).length
+			collisionLayer: Object.keys( canvas.collisionLayer ).length
 		} );
-	}, 40 );
+	}, 50 );
 });

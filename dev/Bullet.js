@@ -1,4 +1,5 @@
 import merge from './merge.js';
+import Particle from "./Particle.js";
 
 // Bullet prototype
 function Bullet ( opts ) {
@@ -23,12 +24,14 @@ Bullet.defaults = {
 	va: 0,
 	da: 0,
 	fhp: 50,
+	damage: 2,
+	collide: true,
 
 	points: [
-		{ x: -3, y: -3 },
-		{ x: -3, y: 3 },
-		{ x: 3, y: 3 },
-		{ x: 3, y: -3 },
+		{ x: -3, y: -2 },
+		{ x: -3, y: 2 },
+		{ x: 3, y: 2 },
+		{ x: 3, y: -2 },
 	],
 
 	hue: 0,
@@ -36,6 +39,7 @@ Bullet.defaults = {
 	lightness: 50,
 
 	fPoints: null,
+	fSegments: null,
 	hp: null
 };
 
@@ -60,6 +64,10 @@ Bullet.prototype.live = function () {
 		return { x: tmp.x + this.x, y: tmp.y + this.y };
 	});
 
+	this.fSegments = this.fPoints.map( function ( point, index, points ) {
+		return [ point, points[ ( points.length > index + 1 ) ? index + 1 : 0 ] ];
+	});
+
 	this.hp -= 1;
 
 	if ( this.hp <= 0 ) this.die();
@@ -67,6 +75,25 @@ Bullet.prototype.live = function () {
 
 Bullet.prototype.die = function () {
 	this.canvas.remove( this );
+};
+
+Bullet.prototype.collision = function ( obj ) {
+	if ( 'hp' in obj ) {
+		obj.hp -= this.damage;
+	}
+
+	for ( let i = 0; i < 10; i++ ) {
+		this.canvas.add( new Particle({
+			x: this.x,
+			y: this.y,
+			size: 2,
+			v: this.v * .2 * Math.random(),
+			a: this.a + 3.2 + ( Math.random() - .5 ) * 1.6,
+			canvas: this.canvas
+		}));
+	}
+
+	this.die();
 };
 
 Bullet.prototype.render = function () {

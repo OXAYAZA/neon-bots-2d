@@ -4,8 +4,7 @@ function Canvas () {
 	this.ctx = this.node.getContext( '2d' );
 	this.rect = null;
 	this.objects = {};
-	this.units = {};
-	this.bullets = {};
+	this.collisionLayer = {};
 	this.state = 'play';
 	this.node.canvas = this;
 
@@ -14,7 +13,7 @@ function Canvas () {
 	this.render();
 }
 
-Canvas.segmentsIntersect = function ( x1, y1, x2, y2, x3, y3, x4, y4 ) {
+Canvas.checkSegmentsIntersection = function ( x1, y1, x2, y2, x3, y3, x4, y4 ) {
 	let a_dx = x2 - x1;
 	let a_dy = y2 - y1;
 	let b_dx = x4 - x3;
@@ -22,7 +21,36 @@ Canvas.segmentsIntersect = function ( x1, y1, x2, y2, x3, y3, x4, y4 ) {
 	let s = (-a_dy * (x1 - x3) + a_dx * (y1 - y3)) / (-b_dx * a_dy + a_dx * b_dy);
 	let t = (+b_dx * (y1 - y3) - b_dy * (x1 - x3)) / (-b_dx * a_dy + a_dx * b_dy);
 	return (s >= 0 && s <= 1 && t >= 0 && t <= 1) ? [x1 + t * a_dx, y1 + t * a_dy] : false;
-}
+};
+
+Canvas.checkIntersection = function ( obj1, obj2 ) {
+	let intersect = false;
+
+	outer: for ( let i1 = 0; i1 < obj1.fSegments.length; i1++ ) {
+		for ( let i2 = 0; i2 < obj2.fSegments.length; i2++ ) {
+			let
+				segment1 = obj1.fSegments[ i1 ],
+				segment2 = obj2.fSegments[ i2 ],
+				tmp = Canvas.checkSegmentsIntersection(
+					segment1[0].x,
+					segment1[0].y,
+					segment1[1].x,
+					segment1[1].y,
+					segment2[0].x,
+					segment2[0].y,
+					segment2[1].x,
+					segment2[1].y
+				);
+
+			if ( tmp ) {
+				intersect = true;
+				break outer;
+			}
+		}
+	}
+
+	return intersect;
+};
 
 Canvas.prototype.render = function () {
 	if ( this.state === 'play' ) {
@@ -31,41 +59,18 @@ Canvas.prototype.render = function () {
 
 	this.ctx.clearRect( 0, 0, this.rect.width, this.rect.height );
 
-	for ( let bID in this.bullets ) {
-		let bullet = this.bullets[ bID ];
+	for ( let u1ID in this.collisionLayer ) {
+		let u1 = this.collisionLayer[ u1ID ];
+		if ( !u1.fSegments ) continue;
 
-		if ( !bullet.fPoints ) continue;
-		let bSegments = bullet.fPoints.map( function ( point, index, points ) {
-			return [ point, points[ ( points.length > index + 1 ) ? index + 1 : 0 ] ];
-		});
+		for ( let u2ID in this.collisionLayer ) {
+			let u2 = this.collisionLayer[ u2ID ];
+			if ( u1 === u2 || !u2.fSegments ) continue;
 
-		for ( let uID in this.units ) {
-			let unit = this.units[ uID ];
-
-			if ( !unit.fPoints ) continue;
-			let uSegments = unit.fPoints.map( function ( point, index, points ) {
-				return [ point, points[ ( points.length > index + 1 ) ? index + 1 : 0 ] ];
-			});
-
-			bSegments.forEach( function ( bSegment ) {
-				uSegments.forEach( function ( uSegment ) {
-					let intersection = Canvas.segmentsIntersect(
-						bSegment[0].x,
-						bSegment[0].y,
-						bSegment[1].x,
-						bSegment[1].y,
-						uSegment[0].x,
-						uSegment[0].y,
-						uSegment[1].x,
-						uSegment[1].y,
-					);
-
-					if ( intersection ) {
-						bullet.die();
-						unit.die();
-					}
-				});
-			});
+			if ( Canvas.checkIntersection( u1, u2 ) ) {
+				if ( u1.collide ) u1.collision( u2 );
+				if ( u2.collide ) u2.collision( u1 );
+			}
 		}
 	}
 
@@ -85,14 +90,12 @@ Canvas.prototype.resize = function () {
 Canvas.prototype.add = function ( obj ) {
 	obj.id = Math.random().toString( 36 ).substr( 2, 9 );
 	this.objects[ obj.id ] = obj;
-	if ( obj.type === 'Unit' ) this.units[ obj.id ] = obj;
-	if ( obj.type === 'Bullet' ) this.bullets[ obj.id ] = obj;
+	if ( obj.collide ) this.collisionLayer[ obj.id ] = obj;
 };
 
 Canvas.prototype.remove = function ( obj ) {
 	delete this.objects[ obj.id ];
-	if ( obj.type === 'Unit' ) delete this.units[ obj.id ];
-	if ( obj.type === 'Bullet' ) delete this.bullets[ obj.id ];
+	if ( obj.collide ) delete this.collisionLayer[ obj.id ];
 };
 
 export default Canvas;

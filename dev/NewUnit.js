@@ -1,4 +1,5 @@
 import merge from './merge.js';
+import Vector from './Vector.js';
 import Particle from './Particle.js';
 import Bullet from './Bullet.js';
 
@@ -18,12 +19,12 @@ Unit.defaults = {
 	type: 'Unit',
 	x: 0,
 	y: 0,
-	dx: 0,
-	dy: 0,
-	v: 0,
 	a: 0,
-	va: 0,
-	da: 0,
+
+	v: new Vector({ x: 0, y: 0 }),
+	// va: 0,
+	// da: 0,
+
 	fhp: 100,
 	mass: 50,
 	reloadTime: 10,
@@ -64,11 +65,11 @@ Unit.prototype.live = function () {
 	this.color = `hsl( ${ 100 / this.fhp * this.hp }, 100%, 50% )`;
 
 	this.da = this.va;
-	this.dx = this.v * Math.cos( this.a );
-	this.dy = this.v * Math.sin( this.a );
+	// this.dx = this.v * Math.cos( this.a );
+	// this.dy = this.v * Math.sin( this.a );
 
-	this.x += this.dx;
-	this.y += this.dy;
+	this.x += this.v.x;
+	this.y += this.v.y;
 	this.a += this.da;
 
 	this.fPoints = this.points.map( ( point ) => {
