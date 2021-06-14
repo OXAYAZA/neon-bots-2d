@@ -1,32 +1,48 @@
+import merge from './merge.js';
+import Particle from './Particle.js';
+import Bullet from './Bullet.js';
+
 // Unit prototype
 function Unit ( opts ) {
-	Object.assign( this, Unit.defaults, opts ); // https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
-	if ( !this.canvas ) throw new Error( 'ctx is a required parameter!' );
+	if ( !opts.canvas ) throw new Error( 'canvas is a required parameter!' );
+
+	merge( this, Unit.defaults );
+	merge( this, opts );
+
+	this.hp = this.fhp;
 }
 
 Unit.defaults = {
 	canvas: null,
 	id: null,
+	type: 'Unit',
 	x: 0,
 	y: 0,
-	ax: 0,
-	ay: 0,
-	hp: 100,
-	speed: 10,
+	dx: 0,
+	dy: 0,
+	v: 0,
+	a: 0,
+	va: 0,
+	da: 0,
+	fhp: 100,
+	hp: null,
+	reloadTime: 10,
+	reloading: false,
 	color: 'hsl( 50, 100%, 50% )',
+	alive: true,
 
-	points: [
-		{ x: 0, y: 6 },
-		{ x: 2, y: 2 },
-		{ x: 2, y: -4 },
-		{ x: -2, y: -4 },
-		{ x: -2, y: 2 },
+	points: [  // Initial unit figure points
+		{ x: 10, y: 0 },
+		{ x: -5,  y: -5 },
+		{ x: 0,  y: 0 },
+		{ x: -5,  y: 5 },
 	],
 
-	fPoint: { x: 0, y: -5 },
+	fPoints: null,  // Unit figure points after rotation applying
 
-	destX: 0,
-	destY: 0
+	cb: {
+		live: null
+	}
 };
 
 Unit.rotate = function ( point, angle ) {
@@ -37,60 +53,89 @@ Unit.rotate = function ( point, angle ) {
 };
 
 Unit.prototype.live = function () {
-	this.color = `hsl( ${ 100 / 400 * this.hp }, 100%, 50% )`;
+	if ( this.cb && this.cb.live instanceof Function ) {
+		this.cb.live.call( this );
+	}
 
-	this.ax = ( this.destX - this.x ) / this.canvas.rect.width * this.speed;
-	this.ay = ( this.destY - this.y ) / this.canvas.rect.height * this.speed;
+	this.color = `hsl( ${ 100 / this.fhp * this.hp }, 100%, 50% )`;
 
-	this.angle = Math.atan2( -this.ax, this.ay );
+	this.da = this.va;
+	this.dx = this.v * Math.cos( this.a );
+	this.dy = this.v * Math.sin( this.a );
 
-	this.x += this.ax;
-	this.y += this.ay;
+	this.x += this.dx;
+	this.y += this.dy;
+	this.a += this.da;
 
-	this.hp -= 1;
+	this.fPoints = this.points.map( ( point ) => {
+		let tmp = Unit.rotate( point, this.a );
+		return { x: tmp.x + this.x, y: tmp.y + this.y };
+	});
 
-	if ( this.hp <= 0 ) this.die();
-};
+	if ( this.reloading ) {
+		if ( this.reloading > 0 ) {
+			this.reloading -= 1;
+		} else {
+			this.reloading = false;
+		}
+	}
 
-Unit.prototype.die = function () {
-	let explosion = ~~( Math.random() * 360 );
-
-	for ( let i = 0; i < 30; i++ ) {
+	if ( this.v !== 0 ) {
 		this.canvas.add( new Particle({
 			x: this.x,
 			y: this.y,
 			width: 4,
 			height: 4,
-			ax: Math.random() * 20 - 10,
-			ay: Math.random() * 20 - 10,
-			canvas: this.canvas,
-			hue: explosion
+			v: this.v * .15,
+			a: Math.random() * 6,
+			canvas: this.canvas
 		}));
 	}
 
-	delete this.canvas.objects[ this.id ];
+	if ( this.hp <= 0 ) this.die();
+};
+
+Unit.prototype.die = function () {
+	for ( let i = 0; i < 50; i++ ) {
+		this.canvas.add( new Particle({
+			x: this.x,
+			y: this.y,
+			width: 6,
+			height: 6,
+			v: Math.random(),
+			a: Math.random() * 6,
+			canvas: this.canvas
+		}));
+	}
+
+	this.alive = false;
+	this.canvas.remove( this );
+};
+
+Unit.prototype.fire = function () {
+	if ( !this.reloading ) {
+		this.canvas.add( new Bullet({
+			x: this.x,
+			y: this.y,
+			v: this.v + 15,
+			a: this.a,
+			canvas: this.canvas
+		}));
+
+		this.reloading = this.reloadTime;
+	}
 };
 
 Unit.prototype.render = function () {
 	this.canvas.ctx.fillStyle = this.color;
 	this.canvas.ctx.beginPath();
 
-	this.points.forEach( ( point, index ) => {
-		let final = Unit.rotate( point, this.angle );
-		if ( index ) this.canvas.ctx.lineTo( this.x + final.x, this.y + final.y );
-		else this.canvas.ctx.moveTo( this.x + final.x, this.y + final.y );
+	this.fPoints.forEach( ( point, index ) => {
+		if ( index ) this.canvas.ctx.lineTo( point.x, point.y );
+		else this.canvas.ctx.moveTo( point.x, point.y );
 	});
-
-	let fFinal = Unit.rotate( this.fPoint, this.angle );
-	this.canvas.add( new Particle({
-		x: this.x + fFinal.x,
-		y: this.y + fFinal.y,
-		width: 4,
-		height: 4,
-		ax: Math.random() * 2 - 1,
-		ay: Math.random() * 2 - 1,
-		canvas: this.canvas
-	}));
 
 	this.canvas.ctx.fill();
 };
+
+export default Unit;

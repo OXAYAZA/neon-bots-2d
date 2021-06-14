@@ -1,18 +1,19 @@
 import merge from './merge.js';
 
-// Particle prototype
-function Particle ( opts ) {
+// Bullet prototype
+function Bullet ( opts ) {
 	if ( !opts.canvas ) throw new Error( 'canvas is a required parameter!' );
 
-	merge( this, Particle.defaults );
+	merge( this, Bullet.defaults );
 	merge( this, opts );
 
 	this.hp = this.fhp;
 }
 
-Particle.defaults = {
+Bullet.defaults = {
 	canvas: null,
 	id: null,
+	type: 'Bullet',
 	x: 0,
 	y: 0,
 	dx: 0,
@@ -22,31 +23,30 @@ Particle.defaults = {
 	va: 0,
 	da: 0,
 	fhp: 50,
-	size: 4,
-
-	hue: 24,
-	saturation: 100,
-	lightness: 80,
 
 	points: [
-		{ x: -2, y: -2 },
-		{ x: -2, y: 2 },
-		{ x: 2, y: 2 },
-		{ x: 2, y: -2 },
+		{ x: -3, y: -3 },
+		{ x: -3, y: 3 },
+		{ x: 3, y: 3 },
+		{ x: 3, y: -3 },
 	],
+
+	hue: 0,
+	saturation: 100,
+	lightness: 50,
 
 	fPoints: null,
 	hp: null
 };
 
-Particle.rotate = function ( point, angle ) {
+Bullet.rotate = function ( point, angle ) {
 	return {
 		x: point.x * Math.cos( angle ) - point.y * Math.sin( angle ),
 		y: point.y * Math.cos( angle ) + point.x * Math.sin( angle )
 	};
 };
 
-Particle.prototype.live = function () {
+Bullet.prototype.live = function () {
 	this.da = this.va;
 	this.dx = this.v * Math.cos( this.a );
 	this.dy = this.v * Math.sin( this.a );
@@ -56,26 +56,20 @@ Particle.prototype.live = function () {
 	this.a += this.da;
 
 	this.fPoints = this.points.map( ( point ) => {
-		return Particle.rotate( point, this.a );
-	});
-
-	this.fPoints = this.fPoints.map( ( point ) => {
-		let percantage = this.hp / this.fhp;
-		let tmp = Particle.rotate( point, this.a );
-		return { x: tmp.x * percantage + this.x, y: tmp.y * percantage + this.y };
+		let tmp = Bullet.rotate( point, this.a );
+		return { x: tmp.x + this.x, y: tmp.y + this.y };
 	});
 
 	this.hp -= 1;
-	this.lightness = this.lightness <= 50 ? this.lightness : this.lightness - 1;
 
 	if ( this.hp <= 0 ) this.die();
 };
 
-Particle.prototype.die = function () {
+Bullet.prototype.die = function () {
 	this.canvas.remove( this );
 };
 
-Particle.prototype.render = function () {
+Bullet.prototype.render = function () {
 	this.canvas.ctx.fillStyle = `hsla(${this.hue}, ${this.saturation}%, ${this.lightness}%)`;
 	this.canvas.ctx.beginPath();
 
@@ -87,4 +81,4 @@ Particle.prototype.render = function () {
 	this.canvas.ctx.fill();
 };
 
-export default Particle;
+export default Bullet;

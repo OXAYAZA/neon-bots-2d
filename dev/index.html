@@ -35,18 +35,26 @@
 				font-family: monospace;
 				user-select: none;
 			}
+
+			.controls {
+				position: absolute;
+				bottom: 10px;
+				right: 10px;
+			}
 		</style>
 
-		<script src='Canvas.js'></script>
-		<script src='Particle.js'></script>
-		<script src='Unit.js'></script>
-		<script src='script.js'></script>
+		<script type="module" src='script.js'></script>
 	</head>
 
 	<body>
 		<main class='page'>
 			<canvas id='root' class='root'></canvas>
 			<pre id='debug' class='debug'></pre>
+			<div class="controls">
+				<button class="button" id="play">Play</button>
+				<button class="button" id="pause">Pause</button>
+				<button class="button" id="tick">Tick</button>
+			</div>
 		</main>
 	</body>
 </html>
