@@ -8,7 +8,7 @@
 # Project files
 !/.gitignore
 !/config.js
-!/gulpfile.js
+!/server.js
 !/package.json
 !/README.md
 
