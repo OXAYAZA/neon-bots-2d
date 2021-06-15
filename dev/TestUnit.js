@@ -19,11 +19,10 @@ Unit.defaults = {
 	type: 'Unit',
 	x: 0,
 	y: 0,
-	a: 0,
 
-	v: new Vector({ x: 0, y: 0 }),
-	// va: 0,
-	// da: 0,
+	d: new Vector({ x: 1, y: 0 }), // direction
+	v: new Vector({ x: 0, y: 0 }), // speed
+	vMax: 5,
 
 	fhp: 100,
 	mass: 50,
@@ -64,16 +63,19 @@ Unit.prototype.live = function () {
 
 	this.color = `hsl( ${ 100 / this.fhp * this.hp }, 100%, 50% )`;
 
-	this.da = this.va;
-	// this.dx = this.v * Math.cos( this.a );
-	// this.dy = this.v * Math.sin( this.a );
+	if ( !this.v.isZero() ) {
+		this.v.multiply( .95 );
+
+		if ( this.v.length() < .1) {
+			this.v.multiply( 0 );
+		}
+	}
 
 	this.x += this.v.x;
 	this.y += this.v.y;
-	this.a += this.da;
 
 	this.fPoints = this.points.map( ( point ) => {
-		let tmp = Unit.rotate( point, this.a );
+		let tmp = Unit.rotate( point, this.d.angle() );
 		return { x: tmp.x + this.x, y: tmp.y + this.y };
 	});
 
@@ -89,12 +91,12 @@ Unit.prototype.live = function () {
 		}
 	}
 
-	if ( this.v !== 0 ) {
+	if ( this.v.length() > 2 ) {
 		this.canvas.add( new Particle({
 			x: this.x,
 			y: this.y,
 			size: 3,
-			v: this.v * .15,
+			v: this.v.length() * .15,
 			a: Math.random() * 6,
 			canvas: this.canvas
 		}));
@@ -134,8 +136,8 @@ Unit.prototype.fire = function () {
 		this.canvas.add( new Bullet({
 			x: this.x,
 			y: this.y,
-			v: this.v + 15,
-			a: this.a,
+			v: this.v.length() + 15,
+			a: this.d.angle(),
 			canvas: this.canvas
 		}));
 
@@ -152,7 +154,15 @@ Unit.prototype.render = function () {
 		else this.canvas.ctx.moveTo( point.x, point.y );
 	});
 
+	this.canvas.ctx.closePath();
 	this.canvas.ctx.fill();
+
+	this.canvas.ctx.strokeStyle = "red";
+	this.canvas.ctx.beginPath();
+	this.canvas.ctx.moveTo( this.x, this.y );
+	this.canvas.ctx.lineTo( this.x + ( this.v.x * 10 ), this.y + ( this.v.y * 10 ) );
+	this.canvas.ctx.closePath();
+	this.canvas.ctx.stroke();
 };
 
 export default Unit;

@@ -93,6 +93,7 @@ Particle.prototype.render = function () {
 		else this.canvas.ctx.moveTo( point.x, point.y );
 	});
 
+	this.canvas.ctx.closePath();
 	this.canvas.ctx.fill();
 };
 

@@ -1,5 +1,7 @@
 import Canvas from './Canvas.js';
+import Vector from './Vector.js';
 import Unit from './Unit.js';
+import TestUnit from './TestUnit.js';
 import Bullet from './Bullet.js';
 import Particle from './Particle.js';
 
@@ -18,12 +20,11 @@ window.addEventListener( 'load', function () {
 		unit = null;
 
 	function spawnHero () {
-		unit = window.unit = new Unit({
+		unit = window.unit = new TestUnit({
 			canvas: canvas,
 			fhp: 2000,
 			x: canvas.rect.width / 2,
-			y: canvas.rect.height / 2,
-			a: 1.6,
+			y: canvas.rect.height / 2
 		});
 
 		canvas.add( unit );
@@ -103,41 +104,14 @@ window.addEventListener( 'load', function () {
 		}));
 	}
 
+	window.keys = {};
+
 	document.addEventListener( 'keydown', function ( event ) {
-		if ( event.code === 'KeyW' ) {
-			unit.v = 10;
-		}
-
-		if ( event.code === 'KeyS' ) {
-			unit.v = -10;
-		}
-
-		if ( event.code === 'KeyA' ) {
-			unit.va = -.1;
-		}
-
-		if ( event.code === 'KeyD' ) {
-			unit.va = .1;
-		}
-
-		if ( event.code === 'KeyR' ) {
-			if ( unit && unit.alive ) unit.die();
-			spawnHero();
-		}
-
-		if ( event.code === 'Space' ) {
-			unit.fire();
-		}
+		window.keys[ event.code ] = true;
 	});
 
 	document.addEventListener( 'keyup', function ( event ) {
-		if ( event.code === 'KeyW' || event.code === 'KeyS' ) {
-			unit.v = 0;
-		}
-
-		if ( event.code === 'KeyA' || event.code === 'KeyD' ) {
-			unit.va = 0;
-		}
+		window.keys[ event.code ] = false;
 	});
 
 	btnPlay.addEventListener( 'click', function () {
@@ -163,18 +137,52 @@ window.addEventListener( 'load', function () {
 		debug( {
 			x: unit.x,
 			y: unit.y,
-			dx: unit.dx,
-			dy: unit.dy,
+			d: unit.d,
 			v: unit.v,
-			a: unit.a,
-			va: unit.va,
-			da: unit.da,
+			vLength: unit.v.length(),
+			vZero: unit.v.isZero(),
 			hp: unit.hp,
 			reloadTime: unit.reloadTime,
 			reloading: unit.reloading,
 			alive: unit.alive,
 			objects: Object.keys( canvas.objects ).length,
-			collisionLayer: Object.keys( canvas.collisionLayer ).length
+			collisionLayer: Object.keys( canvas.collisionLayer ).length,
+			keys: window.keys
 		} );
 	}, 50 );
+
+	setInterval( () => {
+		if ( window.keys[ 'KeyW' ] ) {
+			unit.v.add( ( new Vector( unit.d ) ).multiply( .2 ) );
+		}
+
+		if ( window.keys[ 'KeyS' ] ) {
+			unit.v.add( ( new Vector( unit.d ) ).multiply( .1 ).rotateD( 180 ) );
+		}
+
+		if ( window.keys[ 'KeyQ' ] ) {
+			unit.v.add( ( new Vector( unit.d ) ).multiply( .1 ).rotateD( -90 ) );
+		}
+
+		if ( window.keys[ 'KeyE' ] ) {
+			unit.v.add( ( new Vector( unit.d ) ).multiply( .1 ).rotateD( 90 ) );
+		}
+
+		if ( window.keys[ 'KeyA' ] ) {
+			unit.d.rotateD( -2 );
+		}
+
+		if ( window.keys[ 'KeyD' ] ) {
+			unit.d.rotateD( 2 );
+		}
+
+		if ( window.keys[ 'KeyR' ] ) {
+			if ( unit && unit.alive ) unit.die();
+			spawnHero();
+		}
+
+		if ( window.keys[ 'Space' ] ) {
+			unit.fire();
+		}
+	}, 10 );
 });
