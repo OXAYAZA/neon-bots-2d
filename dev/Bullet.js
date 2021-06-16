@@ -1,47 +1,46 @@
 import merge from './merge.js';
 import Particle from "./Particle.js";
+import Vector from "./Vector.js";
 
 // Bullet prototype
 function Bullet ( opts ) {
 	if ( !opts.canvas ) throw new Error( 'canvas is a required parameter!' );
 
-	merge( this, Bullet.defaults );
+	merge( this, {
+		canvas: null,
+		id: null,
+		type: 'Bullet',
+		x: 0,
+		y: 0,
+		d: new Vector({ x: 1, y: 0 }),
+		v: new Vector({ x: 0, y: 0 }),
+		vMax: 5,
+		fhp: 50,
+		damage: 2,
+		collide: true,
+		points: [
+			{ x: -3, y: -2 },
+			{ x: -3, y: 2 },
+			{ x: 3, y: 2 },
+			{ x: 3, y: -2 },
+		],
+		hue: 0,
+		saturation: 100,
+		lightness: 50,
+		fPoints: null,
+		fSegments: null,
+		hp: null,
+		cb: {
+			liveS: null,
+			liveE: null,
+			die: null
+		}
+	});
+
 	merge( this, opts );
 
 	this.hp = this.fhp;
 }
-
-Bullet.defaults = {
-	canvas: null,
-	id: null,
-	type: 'Bullet',
-	x: 0,
-	y: 0,
-	dx: 0,
-	dy: 1,
-	v: 0,
-	a: 0,
-	va: 0,
-	da: 0,
-	fhp: 50,
-	damage: 2,
-	collide: true,
-
-	points: [
-		{ x: -3, y: -2 },
-		{ x: -3, y: 2 },
-		{ x: 3, y: 2 },
-		{ x: 3, y: -2 },
-	],
-
-	hue: 0,
-	saturation: 100,
-	lightness: 50,
-
-	fPoints: null,
-	fSegments: null,
-	hp: null
-};
 
 Bullet.rotate = function ( point, angle ) {
 	return {
@@ -51,16 +50,23 @@ Bullet.rotate = function ( point, angle ) {
 };
 
 Bullet.prototype.live = function () {
-	this.da = this.va;
-	this.dx = this.v * Math.cos( this.a );
-	this.dy = this.v * Math.sin( this.a );
+	if ( this.cb && this.cb.liveS instanceof Function ) {
+		this.cb.liveS.call( this );
+	}
 
-	this.x += this.dx;
-	this.y += this.dy;
-	this.a += this.da;
+	if ( !this.v.isZero() ) {
+		this.v.multiply( .95 );
+
+		if ( this.v.length() < .05 ) {
+			this.v.multiply( 0 );
+		}
+	}
+
+	this.x += this.v.x;
+	this.y += this.v.y;
 
 	this.fPoints = this.points.map( ( point ) => {
-		let tmp = Bullet.rotate( point, this.a );
+		let tmp = Bullet.rotate( point, this.d.angle() );
 		return { x: tmp.x + this.x, y: tmp.y + this.y };
 	});
 
@@ -71,10 +77,18 @@ Bullet.prototype.live = function () {
 	this.hp -= 1;
 
 	if ( this.hp <= 0 ) this.die();
+
+	if ( this.cb && this.cb.liveE instanceof Function ) {
+		this.cb.liveE.call( this );
+	}
 };
 
 Bullet.prototype.die = function () {
 	this.canvas.remove( this );
+
+	if ( this.cb && this.cb.die instanceof Function ) {
+		this.cb.die.call( this );
+	}
 };
 
 Bullet.prototype.collision = function ( obj ) {
@@ -87,8 +101,8 @@ Bullet.prototype.collision = function ( obj ) {
 			x: this.x,
 			y: this.y,
 			size: 2,
-			v: this.v * .2 * Math.random(),
-			a: this.a + 3.2 + ( Math.random() - .5 ) * 1.6,
+			d: ( new Vector( this.d ) ).rotateD( 180 ),
+			v: ( new Vector( this.v ) ).rotateD( 180 + ( Math.random() - .5 ) * 45 ).multiply( Math.random() * .5 ),
 			canvas: this.canvas
 		}));
 	}
@@ -107,6 +121,13 @@ Bullet.prototype.render = function () {
 
 	this.canvas.ctx.closePath();
 	this.canvas.ctx.fill();
+
+	// this.canvas.ctx.strokeStyle = "black";
+	// this.canvas.ctx.beginPath();
+	// this.canvas.ctx.moveTo( this.x, this.y );
+	// this.canvas.ctx.lineTo( this.x + ( this.v.x * 10 ), this.y + ( this.v.y * 10 ) );
+	// this.canvas.ctx.closePath();
+	// this.canvas.ctx.stroke();
 };
 
 export default Bullet;

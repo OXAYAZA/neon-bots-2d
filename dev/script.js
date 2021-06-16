@@ -1,7 +1,6 @@
 import Canvas from './Canvas.js';
 import Vector from './Vector.js';
 import Unit from './Unit.js';
-import TestUnit from './TestUnit.js';
 import Bullet from './Bullet.js';
 import Particle from './Particle.js';
 
@@ -20,7 +19,7 @@ window.addEventListener( 'load', function () {
 		unit = null;
 
 	function spawnHero () {
-		unit = window.unit = new TestUnit({
+		unit = window.hero = new Unit({
 			canvas: canvas,
 			fhp: 2000,
 			x: canvas.rect.width / 2,
@@ -30,28 +29,41 @@ window.addEventListener( 'load', function () {
 		canvas.add( unit );
 	}
 
-	function spawnLola () {
+	function spawnBoss () {
 		canvas.add( new Unit({
 			canvas: canvas,
 			x: canvas.rect.width / 2,
 			y: canvas.rect.height * .1,
-			a: 0,
-			v: 3,
+			d: new Vector({ x: 1, y: 0 }),
 			fhp: 2000,
 			mass: 200,
+			reloadTime: 10,
 			points: [
+				{ x: 0,  y: 0 },
 				{ x: -10,  y: -10 },
-				{ x: 50,   y: -10 },
-				{ x: 60,  y: 0 },
-				{ x: 50,  y: 10 },
-				{ x: -10,  y: 10 },
-				{ x: 0,  y: 0 }
+				{ x: 0,  y: -50 },
+				{ x: 20,   y: -50 },
+				{ x: 60,  y: -10 },
+				{ x: 60,  y: 10 },
+				{ x: 20,  y: 50 },
+				{ x: 0,  y: 50 },
+				{ x: -10,  y: 10 }
+			],
+			bPoints: [
+				{ x: 21, y: -50 },
+				{ x: 61, y: -10 },
+				{ x: 61, y: 10 },
+				{ x: 21, y: 50 },
 			],
 			cb: {
-				live: function () {
-					this.a += .01;
+				liveS: function () {
+					this.v.add( ( new Vector( this.d ) ).multiply( .2 ) );
+					this.d.rotateD( .6 );
 				},
-				die: spawnLola
+				liveE: function () {
+					this.fire();
+				},
+				die: spawnBoss
 			}
 		}));
 	}
@@ -61,8 +73,7 @@ window.addEventListener( 'load', function () {
 			canvas: canvas,
 			x: Math.random() * canvas.rect.width,
 			y: 10,
-			a: 1.6 + ( Math.random() - .5 ),
-			v: 2,
+			d: ( new Vector({ x: 0, y: 1 }) ).rotateD( ( Math.random() - .5 ) * 90 ),
 			fhp: 40,
 			mass: 100,
 			points: [
@@ -75,9 +86,31 @@ window.addEventListener( 'load', function () {
 				{ x: 20, y: 3 }
 			],
 			cb: {
-				live: function () {
+				liveS: function () {
+					this.v.add( ( new Vector( this.d ) ).multiply( .13 ) );
 					this.hp -= .1;
 				}
+			}
+		}));
+	}
+
+	function spawnWallio () {
+		canvas.add( new Unit({
+			canvas: canvas,
+			x: canvas.rect.width * .95,
+			y: canvas.rect.height / 2,
+			d: new Vector({ x: 0, y: -1 }),
+			fhp: 8000,
+			mass: 1000,
+			reloadTime: 10,
+			points: [
+				{ x: 200,  y: 0 },
+				{ x: 200,  y: 10 },
+				{ x: -200,  y: 10 },
+				{ x: -200,  y: 0 },
+			],
+			cb: {
+				die: spawnWallio
 			}
 		}));
 	}
@@ -87,9 +120,14 @@ window.addEventListener( 'load', function () {
 			canvas: canvas,
 			x: Math.random() * canvas.rect.width,
 			y: canvas.rect.height,
-			a: 1.6,
-			v: -5,
-			fhp: 200
+			d: new Vector({ x: 0, y: -1 }),
+			v: new Vector({ x: 0, y: -2 }),
+			fhp: 300,
+			cb: {
+				liveS: function () {
+					this.v.add( ( new Vector( this.d ) ).multiply( .2 ) );
+				}
+			}
 		}));
 	}
 
@@ -98,9 +136,14 @@ window.addEventListener( 'load', function () {
 			canvas: canvas,
 			x: Math.random() * canvas.rect.width,
 			y: canvas.rect.height,
-			a: 1.6,
-			v: -10,
-			fhp: Math.random() * 500
+			d: new Vector({ x: 0, y: -1 }),
+			v: new Vector({ x: 0, y: -3 }),
+			fhp: Math.random() * 500,
+			cb: {
+				liveS: function () {
+					this.v.add( ( new Vector( this.d ) ).multiply( .3 ) );
+				}
+			}
 		}));
 	}
 
@@ -115,8 +158,10 @@ window.addEventListener( 'load', function () {
 	});
 
 	btnPlay.addEventListener( 'click', function () {
-		canvas.state = 'play';
-		canvas.render();
+		if ( canvas.state !== 'play' ) {
+			canvas.state = 'play';
+			canvas.render();
+		}
 	});
 
 	btnPause.addEventListener( 'click', function () {
@@ -128,7 +173,8 @@ window.addEventListener( 'load', function () {
 	});
 
 	spawnHero();
-	spawnLola();
+	spawnBoss();
+	spawnWallio();
 	setInterval( spawnDummy, 500 );
 	setInterval( spawnBullet, 100 );
 	setInterval( spawnParticle, 50 );

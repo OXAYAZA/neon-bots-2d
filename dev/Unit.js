@@ -1,4 +1,5 @@
 import merge from './merge.js';
+import Vector from './Vector.js';
 import Particle from './Particle.js';
 import Bullet from './Bullet.js';
 
@@ -6,48 +7,48 @@ import Bullet from './Bullet.js';
 function Unit ( opts ) {
 	if ( !opts.canvas ) throw new Error( 'canvas is a required parameter!' );
 
-	merge( this, Unit.defaults );
+	merge( this, {
+		canvas: null,
+		id: null,
+		type: 'Unit',
+		x: 0,
+		y: 0,
+		d: new Vector({ x: 1, y: 0 }),
+		v: new Vector({ x: 0, y: 0 }),
+		vMax: 5,
+		fhp: 100,
+		mass: 50,
+		reloadTime: 3,
+		reloading: false,
+		color: 'hsl( 50, 100%, 50% )',
+		alive: true,
+		collide: true,
+		points: [  // Initial unit figure points
+			{ x: 0,  y: 0 },
+			{ x: -5,  y: 5 },
+			{ x: -2,  y: 5 },
+			{ x: 10, y: 0 },
+			{ x: -2,  y: -5 },
+			{ x: -5,  y: -5 }
+		],
+		bPoints: [
+			{ x: 11, y: 0 }
+		],
+		fPoints: null,  // Unit figure points after rotation applying
+		fSegments: null,
+		fbPoints: null,
+		hp: null,
+		cb: {
+			liveS: null,
+			liveE: null,
+			die: null
+		}
+	});
+
 	merge( this, opts );
 
 	this.hp = this.fhp;
 }
-
-Unit.defaults = {
-	canvas: null,
-	id: null,
-	type: 'Unit',
-	x: 0,
-	y: 0,
-	dx: 0,
-	dy: 0,
-	v: 0,
-	a: 0,
-	va: 0,
-	da: 0,
-	fhp: 100,
-	mass: 50,
-	reloadTime: 10,
-	reloading: false,
-	color: 'hsl( 50, 100%, 50% )',
-	alive: true,
-	collide: true,
-
-	points: [  // Initial unit figure points
-		{ x: 10, y: 0 },
-		{ x: -5,  y: -5 },
-		{ x: 0,  y: 0 },
-		{ x: -5,  y: 5 },
-	],
-
-	fPoints: null,  // Unit figure points after rotation applying
-	fSegments: null,
-	hp: null,
-
-	cb: {
-		live: null,
-		die: null
-	}
-};
 
 Unit.rotate = function ( point, angle ) {
 	return {
@@ -57,22 +58,30 @@ Unit.rotate = function ( point, angle ) {
 };
 
 Unit.prototype.live = function () {
-	if ( this.cb && this.cb.live instanceof Function ) {
-		this.cb.live.call( this );
+	if ( this.cb && this.cb.liveS instanceof Function ) {
+		this.cb.liveS.call( this );
 	}
 
 	this.color = `hsl( ${ 100 / this.fhp * this.hp }, 100%, 50% )`;
 
-	this.da = this.va;
-	this.dx = this.v * Math.cos( this.a );
-	this.dy = this.v * Math.sin( this.a );
+	if ( !this.v.isZero() ) {
+		this.v.multiply( .95 );
 
-	this.x += this.dx;
-	this.y += this.dy;
-	this.a += this.da;
+		if ( this.v.length() < .05 ) {
+			this.v.multiply( 0 );
+		}
+	}
+
+	this.x += this.v.x;
+	this.y += this.v.y;
+
+	this.fbPoints = this.bPoints.map( ( point ) => {
+		let tmp = Unit.rotate( point, this.d.angle() );
+		return { x: tmp.x + this.x, y: tmp.y + this.y };
+	});
 
 	this.fPoints = this.points.map( ( point ) => {
-		let tmp = Unit.rotate( point, this.a );
+		let tmp = Unit.rotate( point, this.d.angle() );
 		return { x: tmp.x + this.x, y: tmp.y + this.y };
 	});
 
@@ -88,18 +97,22 @@ Unit.prototype.live = function () {
 		}
 	}
 
-	if ( this.v !== 0 ) {
+	if ( this.v.length() > 2 ) {
 		this.canvas.add( new Particle({
 			x: this.x,
 			y: this.y,
 			size: 3,
-			v: this.v * .15,
-			a: Math.random() * 6,
+			d: ( new Vector( this.d ) ).rotateD( Math.random() * 360 ),
+			v: ( new Vector( this.v ) ).rotateD( 180 + ( Math.random() - .5 ) * 20 ),
 			canvas: this.canvas
 		}));
 	}
 
 	if ( this.hp <= 0 ) this.die();
+
+	if ( this.cb && this.cb.liveE instanceof Function ) {
+		this.cb.liveE.call( this );
+	}
 };
 
 Unit.prototype.die = function () {
@@ -108,8 +121,8 @@ Unit.prototype.die = function () {
 			x: this.x,
 			y: this.y,
 			size: this.mass * .02,
-			v: this.mass * .03 * Math.random(),
-			a: Math.random() * 6,
+			d: new Vector({ x: 0, y: 1 }).rotateD( Math.random() * 360 ),
+			v: ( new Vector({ x: 0, y: 1 }) ).rotateD( Math.random() * 360 ).multiply( Math.random() * 3 ),
 			canvas: this.canvas
 		}));
 	}
@@ -130,13 +143,15 @@ Unit.prototype.collision = function ( obj ) {
 
 Unit.prototype.fire = function () {
 	if ( !this.reloading ) {
-		this.canvas.add( new Bullet({
-			x: this.x,
-			y: this.y,
-			v: this.v + 15,
-			a: this.a,
-			canvas: this.canvas
-		}));
+		this.fbPoints.forEach( ( point ) => {
+			this.canvas.add( new Bullet({
+				x: point.x,
+				y: point.y,
+				d: new Vector( this.d ),
+				v: ( new Vector( this.d ) ).multiply( 40 ),
+				canvas: this.canvas
+			}));
+		});
 
 		this.reloading = this.reloadTime;
 	}
@@ -151,7 +166,15 @@ Unit.prototype.render = function () {
 		else this.canvas.ctx.moveTo( point.x, point.y );
 	});
 
+	this.canvas.ctx.closePath();
 	this.canvas.ctx.fill();
+
+	// this.canvas.ctx.strokeStyle = "black";
+	// this.canvas.ctx.beginPath();
+	// this.canvas.ctx.moveTo( this.x, this.y );
+	// this.canvas.ctx.lineTo( this.x + ( this.v.x * 10 ), this.y + ( this.v.y * 10 ) );
+	// this.canvas.ctx.closePath();
+	// this.canvas.ctx.stroke();
 };
 
 export default Unit;
