@@ -1,8 +1,8 @@
 /**
  * Merging of two objects
- * @param {Object} source
- * @param {Object} merged
- * @return {Object}
+ * @param {Obj} source
+ * @param {Obj} merged
+ * @return {Obj}
  */
 function merge( source, merged ) {
 	for ( let key in merged ) {

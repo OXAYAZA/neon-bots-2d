@@ -1,10 +1,10 @@
-import merge from './merge.js';
+import merge from '../util/merge.js';
 import Vector from './Vector.js';
 import Particle from './Particle.js';
 import Bullet from './Bullet.js';
 
 // Unit prototype
-function Unit ( opts ) {
+function _Unit (opts ) {
 	if ( !opts.canvas ) throw new Error( 'canvas is a required parameter!' );
 
 	merge( this, {
@@ -50,14 +50,14 @@ function Unit ( opts ) {
 	this.hp = this.fhp;
 }
 
-Unit.rotate = function ( point, angle ) {
+_Unit.rotate = function (point, angle ) {
 	return {
 		x: point.x * Math.cos( angle ) - point.y * Math.sin( angle ),
 		y: point.y * Math.cos( angle ) + point.x * Math.sin( angle )
 	};
 };
 
-Unit.prototype.live = function () {
+_Unit.prototype.live = function () {
 	if ( this.cb && this.cb.liveS instanceof Function ) {
 		this.cb.liveS.call( this );
 	}
@@ -76,12 +76,12 @@ Unit.prototype.live = function () {
 	this.y += this.v.y;
 
 	this.fbPoints = this.bPoints.map( ( point ) => {
-		let tmp = Unit.rotate( point, this.d.angle() );
+		let tmp = _Unit.rotate( point, this.d.angle() );
 		return { x: tmp.x + this.x, y: tmp.y + this.y };
 	});
 
 	this.fPoints = this.points.map( ( point ) => {
-		let tmp = Unit.rotate( point, this.d.angle() );
+		let tmp = _Unit.rotate( point, this.d.angle() );
 		return { x: tmp.x + this.x, y: tmp.y + this.y };
 	});
 
@@ -115,7 +115,7 @@ Unit.prototype.live = function () {
 	}
 };
 
-Unit.prototype.die = function () {
+_Unit.prototype.die = function () {
 	for ( let i = 0; i < this.mass; i++ ) {
 		this.canvas.add( new Particle({
 			x: this.x,
@@ -135,13 +135,13 @@ Unit.prototype.die = function () {
 	}
 };
 
-Unit.prototype.collision = function ( obj ) {
+_Unit.prototype.collision = function (obj ) {
 	if ( 'type' in obj && obj.type === 'Unit' ) {
 		obj.hp -= 50;
 	}
 };
 
-Unit.prototype.fire = function () {
+_Unit.prototype.fire = function () {
 	if ( !this.reloading ) {
 		this.fbPoints.forEach( ( point ) => {
 			this.canvas.add( new Bullet({
@@ -157,7 +157,7 @@ Unit.prototype.fire = function () {
 	}
 };
 
-Unit.prototype.render = function () {
+_Unit.prototype.render = function () {
 	this.canvas.ctx.fillStyle = this.color;
 	this.canvas.ctx.beginPath();
 
@@ -177,4 +177,4 @@ Unit.prototype.render = function () {
 	// this.canvas.ctx.stroke();
 };
 
-export default Unit;
+export default _Unit;

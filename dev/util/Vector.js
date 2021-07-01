@@ -1,4 +1,4 @@
-import merge from './merge.js';
+import merge from '../util/merge.js';
 
 // class Vector {
 // 	constructor ( object ) {

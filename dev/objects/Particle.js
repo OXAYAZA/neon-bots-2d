@@ -1,55 +1,59 @@
-import merge from './merge.js';
-import Particle from "./Particle.js";
+import merge from '../util/merge.js';
 import Vector from "./Vector.js";
 
-// Bullet prototype
-function Bullet ( opts ) {
+// Particle prototype
+function Particle ( opts ) {
 	if ( !opts.canvas ) throw new Error( 'canvas is a required parameter!' );
 
-	merge( this, {
-		canvas: null,
-		id: null,
-		type: 'Bullet',
-		x: 0,
-		y: 0,
-		d: new Vector({ x: 1, y: 0 }),
-		v: new Vector({ x: 0, y: 0 }),
-		vMax: 5,
-		fhp: 50,
-		damage: 2,
-		collide: true,
-		points: [
-			{ x: -3, y: -2 },
-			{ x: -3, y: 2 },
-			{ x: 3, y: 2 },
-			{ x: 3, y: -2 },
-		],
-		hue: 0,
-		saturation: 100,
-		lightness: 50,
-		fPoints: null,
-		fSegments: null,
-		hp: null,
-		cb: {
-			liveS: null,
-			liveE: null,
-			die: null
-		}
-	});
-
+	merge( this, Particle.defaults );
 	merge( this, opts );
+
+	if ( this.size ) {
+		this.points = this.points.map( ( point ) => {
+			return { x: point.x * this.size, y: point.y * this.size };
+		});
+	}
 
 	this.hp = this.fhp;
 }
 
-Bullet.rotate = function ( point, angle ) {
+Particle.defaults = {
+	canvas: null,
+	id: null,
+	x: 0,
+	y: 0,
+	d: new Vector({ x: 1, y: 0 }),
+	v: new Vector({ x: 0, y: 0 }),
+	vMax: 5,
+	fhp: 50,
+	size: 2,
+	hue: 24,
+	saturation: 100,
+	lightness: 80,
+	points: [
+		{ x: -1, y: -1 },
+		{ x: -1, y: 1 },
+		{ x: 1, y: 1 },
+		{ x: 1, y: -1 },
+	],
+	fPoints: null,
+	fSegments: null,
+	hp: null,
+	cb: {
+		liveS: null,
+		liveE: null,
+		die: null
+	}
+};
+
+Particle.rotate = function ( point, angle ) {
 	return {
 		x: point.x * Math.cos( angle ) - point.y * Math.sin( angle ),
 		y: point.y * Math.cos( angle ) + point.x * Math.sin( angle )
 	};
 };
 
-Bullet.prototype.live = function () {
+Particle.prototype.live = function () {
 	if ( this.cb && this.cb.liveS instanceof Function ) {
 		this.cb.liveS.call( this );
 	}
@@ -66,8 +70,9 @@ Bullet.prototype.live = function () {
 	this.y += this.v.y;
 
 	this.fPoints = this.points.map( ( point ) => {
-		let tmp = Bullet.rotate( point, this.d.angle() );
-		return { x: tmp.x + this.x, y: tmp.y + this.y };
+		let percantage = this.hp / this.fhp;
+		let tmp = Particle.rotate( point, this.d.angle() );
+		return { x: tmp.x * percantage + this.x, y: tmp.y * percantage + this.y };
 	});
 
 	this.fSegments = this.fPoints.map( function ( point, index, points ) {
@@ -75,6 +80,7 @@ Bullet.prototype.live = function () {
 	});
 
 	this.hp -= 1;
+	this.lightness = this.lightness <= 50 ? this.lightness : this.lightness - 1;
 
 	if ( this.hp <= 0 ) this.die();
 
@@ -83,7 +89,7 @@ Bullet.prototype.live = function () {
 	}
 };
 
-Bullet.prototype.die = function () {
+Particle.prototype.die = function () {
 	this.canvas.remove( this );
 
 	if ( this.cb && this.cb.die instanceof Function ) {
@@ -91,26 +97,7 @@ Bullet.prototype.die = function () {
 	}
 };
 
-Bullet.prototype.collision = function ( obj ) {
-	if ( 'hp' in obj ) {
-		obj.hp -= this.damage;
-	}
-
-	for ( let i = 0; i < 10; i++ ) {
-		this.canvas.add( new Particle({
-			x: this.x,
-			y: this.y,
-			size: 2,
-			d: ( new Vector( this.d ) ).rotateD( 180 ),
-			v: ( new Vector( this.v ) ).rotateD( 180 + ( Math.random() - .5 ) * 45 ).multiply( Math.random() * .5 ),
-			canvas: this.canvas
-		}));
-	}
-
-	this.die();
-};
-
-Bullet.prototype.render = function () {
+Particle.prototype.render = function () {
 	this.canvas.ctx.fillStyle = `hsla(${this.hue}, ${this.saturation}%, ${this.lightness}%)`;
 	this.canvas.ctx.beginPath();
 
@@ -130,4 +117,4 @@ Bullet.prototype.render = function () {
 	// this.canvas.ctx.stroke();
 };
 
-export default Bullet;
+export default Particle;

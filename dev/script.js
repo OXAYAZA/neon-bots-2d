@@ -1,8 +1,9 @@
-import Canvas from './Canvas.js';
-import Vector from './Vector.js';
-import Unit from './Unit.js';
-import Bullet from './Bullet.js';
-import Particle from './Particle.js';
+import Canvas from './objects/Canvas.js';
+import Vector from './util/Vector.js';
+// import Obj from './objects/Obj.js';
+import Unit from './objects/Unit.js';
+// import Bullet from './objects/Bullet.js';
+// import Particle from './objects/Particle.js';
 
 // Debug
 function debug ( data ) {
@@ -16,21 +17,20 @@ window.addEventListener( 'load', function () {
 		btnPause = document.querySelector( '#pause' ),
 		btnTick = document.querySelector( '#tick' ),
 		canvas = window.canvas = new Canvas(),
-		unit = null;
+		hero = null;
 
 	function spawnHero () {
-		unit = window.hero = new Unit({
+		hero = window.hero = new Unit({
 			canvas: canvas,
-			fhp: 2000,
 			x: canvas.rect.width / 2,
 			y: canvas.rect.height / 2
 		});
 
-		canvas.add( unit );
+		canvas.add( hero );
 	}
 
 	function spawnBoss () {
-		canvas.add( new Unit({
+		canvas.add( new _Unit({
 			canvas: canvas,
 			x: canvas.rect.width / 2,
 			y: canvas.rect.height * .1,
@@ -69,7 +69,7 @@ window.addEventListener( 'load', function () {
 	}
 
 	function spawnDummy () {
-		canvas.add( new Unit({
+		canvas.add( new _Unit({
 			canvas: canvas,
 			x: Math.random() * canvas.rect.width,
 			y: 10,
@@ -94,8 +94,8 @@ window.addEventListener( 'load', function () {
 		}));
 	}
 
-	function spawnWallio () {
-		canvas.add( new Unit({
+	function spawnWall () {
+		canvas.add( new _Unit({
 			canvas: canvas,
 			x: canvas.rect.width * .95,
 			y: canvas.rect.height / 2,
@@ -110,7 +110,7 @@ window.addEventListener( 'load', function () {
 				{ x: -200,  y: 0 },
 			],
 			cb: {
-				die: spawnWallio
+				die: spawnWall
 			}
 		}));
 	}
@@ -173,62 +173,53 @@ window.addEventListener( 'load', function () {
 	});
 
 	spawnHero();
-	spawnBoss();
-	spawnWallio();
-	setInterval( spawnDummy, 500 );
-	setInterval( spawnBullet, 100 );
-	setInterval( spawnParticle, 50 );
+	// spawnBoss();
+	// spawnWall();
+	// setInterval( spawnDummy, 500 );
+	// setInterval( spawnBullet, 100 );
+	// setInterval( spawnParticle, 50 );
 
 	setInterval( () => {
 		debug( {
-			x: unit.x,
-			y: unit.y,
-			d: unit.d,
-			v: unit.v,
-			vLength: unit.v.length(),
-			vZero: unit.v.isZero(),
-			hp: unit.hp,
-			reloadTime: unit.reloadTime,
-			reloading: unit.reloading,
-			alive: unit.alive,
 			objects: Object.keys( canvas.objects ).length,
 			collisionLayer: Object.keys( canvas.collisionLayer ).length,
-			keys: window.keys
-		} );
+			keys: window.keys,
+			hero: hero.info()
+		});
 	}, 50 );
 
 	setInterval( () => {
-		if ( window.keys[ 'KeyW' ] ) {
-			unit.v.add( ( new Vector( unit.d ) ).multiply( .2 ) );
-		}
-
-		if ( window.keys[ 'KeyS' ] ) {
-			unit.v.add( ( new Vector( unit.d ) ).multiply( .1 ).rotateD( 180 ) );
-		}
-
-		if ( window.keys[ 'KeyQ' ] ) {
-			unit.v.add( ( new Vector( unit.d ) ).multiply( .1 ).rotateD( -90 ) );
-		}
-
-		if ( window.keys[ 'KeyE' ] ) {
-			unit.v.add( ( new Vector( unit.d ) ).multiply( .1 ).rotateD( 90 ) );
-		}
-
-		if ( window.keys[ 'KeyA' ] ) {
-			unit.d.rotateD( -2 );
-		}
-
-		if ( window.keys[ 'KeyD' ] ) {
-			unit.d.rotateD( 2 );
-		}
-
 		if ( window.keys[ 'KeyR' ] ) {
-			if ( unit && unit.alive ) unit.die();
+			if ( hero && hero.alive ) hero.die();
 			spawnHero();
 		}
 
-		if ( window.keys[ 'Space' ] ) {
-			unit.fire();
-		}
+		// if ( window.keys[ 'KeyW' ] ) {
+		// 	unit.v.add( ( new Vector( unit.d ) ).multiply( .2 ) );
+		// }
+		//
+		// if ( window.keys[ 'KeyS' ] ) {
+		// 	unit.v.add( ( new Vector( unit.d ) ).multiply( .1 ).rotateD( 180 ) );
+		// }
+		//
+		// if ( window.keys[ 'KeyQ' ] ) {
+		// 	unit.v.add( ( new Vector( unit.d ) ).multiply( .1 ).rotateD( -90 ) );
+		// }
+		//
+		// if ( window.keys[ 'KeyE' ] ) {
+		// 	unit.v.add( ( new Vector( unit.d ) ).multiply( .1 ).rotateD( 90 ) );
+		// }
+		//
+		// if ( window.keys[ 'KeyA' ] ) {
+		// 	unit.d.rotateD( -2 );
+		// }
+		//
+		// if ( window.keys[ 'KeyD' ] ) {
+		// 	unit.d.rotateD( 2 );
+		// }
+		//
+		// if ( window.keys[ 'Space' ] ) {
+		// 	unit.fire();
+		// }
 	}, 10 );
 });

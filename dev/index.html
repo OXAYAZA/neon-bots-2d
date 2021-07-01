@@ -4,52 +4,16 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>Canvas</title>
-
-		<style>
-			* {
-				padding: 0;
-				margin: 0;
-				box-sizing: border-box;
-			}
-
-			.page {
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				height: 100vh;
-			}
-
-			.root {
-				height: 100vh;
-				width: 100vw;
-				background: #313233;
-			}
-
-			.debug {
-				position: fixed;
-				bottom: 10px;
-				left: 10px;
-				padding: 5px;
-				background: rgba( 0, 0, 0, .5 );
-				color: white;
-				font-family: monospace;
-				user-select: none;
-			}
-
-			.controls {
-				position: absolute;
-				bottom: 10px;
-				right: 10px;
-			}
-		</style>
-
+		<link rel="stylesheet" href="style.css">
 		<script type="module" src='script.js'></script>
 	</head>
 
 	<body>
 		<main class='page'>
 			<canvas id='root' class='root'></canvas>
+
 			<pre id='debug' class='debug'></pre>
+
 			<div class="controls">
 				<button class="button" id="play">Play</button>
 				<button class="button" id="pause">Pause</button>

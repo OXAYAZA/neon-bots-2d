@@ -1,0 +1,35 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.root {
+  height: 100vh;
+  width: 100vw;
+  background: #313233;
+}
+
+.debug {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  padding: 5px;
+  background: rgba( 0, 0, 0, .5 );
+  color: white;
+  font-family: monospace;
+  user-select: none;
+}
+
+.controls {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+}
