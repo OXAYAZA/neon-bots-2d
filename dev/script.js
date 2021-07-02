@@ -37,7 +37,7 @@ window.addEventListener( 'load', function () {
 			fhp: 2000,
 			mass: 200,
 			reloadTime: 10,
-			points: [
+			figureInitial: [
 				{ x: 0,  y: 0 },
 				{ x: -10,  y: -10 },
 				{ x: 0,  y: -50 },
@@ -48,7 +48,7 @@ window.addEventListener( 'load', function () {
 				{ x: 0,  y: 50 },
 				{ x: -10,  y: 10 }
 			],
-			bPoints: [
+			bulletSlots: [
 				{ x: 21, y: -50 },
 				{ x: 61, y: -10 },
 				{ x: 61, y: 10 },
@@ -94,23 +94,19 @@ window.addEventListener( 'load', function () {
 	}
 
 	function spawnWall () {
-		canvas.add( new _Unit({
+		canvas.add( new Unit({
 			canvas: canvas,
 			x: canvas.rect.width * .95,
 			y: canvas.rect.height / 2,
 			d: new Vector({ x: 0, y: -1 }),
-			fhp: 8000,
 			mass: 1000,
-			reloadTime: 10,
-			points: [
+			hpInitial: 8000,
+			figureInitial: [
 				{ x: 200,  y: 0 },
 				{ x: 200,  y: 10 },
 				{ x: -200,  y: 10 },
 				{ x: -200,  y: 0 },
-			],
-			cb: {
-				die: spawnWall
-			}
+			]
 		}));
 	}
 
@@ -165,7 +161,7 @@ window.addEventListener( 'load', function () {
 
 	spawnHero();
 	// spawnBoss();
-	// spawnWall();
+	spawnWall();
 	// setInterval( spawnDummy, 500 );
 	setInterval( spawnBullet, 100 );
 	setInterval( spawnParticle, 50 );
@@ -181,7 +177,7 @@ window.addEventListener( 'load', function () {
 
 	setInterval( () => {
 		if ( window.keys[ 'KeyR' ] ) {
-			if ( hero ) hero.die();
+			if ( hero && hero.alive ) hero.die();
 			spawnHero();
 		}
 

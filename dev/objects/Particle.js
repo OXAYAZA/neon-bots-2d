@@ -1,5 +1,5 @@
-import Obj from './Obj.js';
 import merge from "../util/merge.js";
+import Obj from './Obj.js';
 
 class Particle extends Obj {
   type = 'Particle';

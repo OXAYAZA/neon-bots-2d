@@ -1,13 +1,14 @@
-import Vector from '../util/Vector.js';
 import merge from "../util/merge.js";
+import Vector from '../util/Vector.js';
 import Obj from './Obj.js';
-import Bullet from "./Bullet.js";
 import Particle from "./Particle.js";
+import Bullet from "./Bullet.js";
 
 class Unit extends Obj {
   type = 'Unit';
   color = 'hsl( 50, 100%, 50% )';
   collide = true;
+  alive = true;
   hpInitial = 100;
   figureInitial = [
     { x: 0,  y: 0 },
@@ -130,6 +131,7 @@ class Unit extends Obj {
 
   die () {
     this.explode();
+    this.alive = false;
     this.canvas.remove( this );
   }
 
