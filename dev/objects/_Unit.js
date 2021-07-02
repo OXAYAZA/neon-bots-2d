@@ -1,7 +1,7 @@
 import merge from '../util/merge.js';
 import Vector from './Vector.js';
-import Particle from './Particle.js';
-import Bullet from './Bullet.js';
+import _Particle from './Particle.js';
+import _Bullet from './Bullet.js';
 
 // Unit prototype
 function _Unit (opts ) {
@@ -98,7 +98,7 @@ _Unit.prototype.live = function () {
 	}
 
 	if ( this.v.length() > 2 ) {
-		this.canvas.add( new Particle({
+		this.canvas.add( new _Particle({
 			x: this.x,
 			y: this.y,
 			size: 3,
@@ -117,7 +117,7 @@ _Unit.prototype.live = function () {
 
 _Unit.prototype.die = function () {
 	for ( let i = 0; i < this.mass; i++ ) {
-		this.canvas.add( new Particle({
+		this.canvas.add( new _Particle({
 			x: this.x,
 			y: this.y,
 			size: this.mass * .02,
@@ -144,7 +144,7 @@ _Unit.prototype.collision = function (obj ) {
 _Unit.prototype.fire = function () {
 	if ( !this.reloading ) {
 		this.fbPoints.forEach( ( point ) => {
-			this.canvas.add( new Bullet({
+			this.canvas.add( new _Bullet({
 				x: point.x,
 				y: point.y,
 				d: new Vector( this.d ),
