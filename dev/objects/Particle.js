@@ -7,7 +7,7 @@ class Particle extends Obj {
   saturation = 100;
   lightness = 80;
   sizeInitial = 2;
-  hpInitial = 100;
+  hpInitial = 50;
   hp = null;
 
   constructor ( props ) {

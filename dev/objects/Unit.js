@@ -1,7 +1,8 @@
-import Obj from './Obj.js';
 import Vector from '../util/Vector.js';
 import merge from "../util/merge.js";
+import Obj from './Obj.js';
 import Bullet from "./Bullet.js";
+import Particle from "./Particle.js";
 
 class Unit extends Obj {
   type = 'Unit';
@@ -16,6 +17,7 @@ class Unit extends Obj {
     { x: -2,  y: -5 },
     { x: -5,  y: -5 }
   ];
+  mass = 50;
   reloadTime = 5;
   reloading = false;
   bulletSlots = [
@@ -32,6 +34,32 @@ class Unit extends Obj {
 
   updateColor () {
     this.color = `hsl( ${ 100 / this.hpInitial * this.hp }, 100%, 50% )`;
+  }
+
+  explode () {
+    for ( let i = 0; i < this.mass; i++ ) {
+      this.canvas.add( new Particle({
+        canvas: this.canvas,
+        x: this.x,
+        y: this.y,
+        d: new Vector({ x: 0, y: 1 }).rotateD( Math.random() * 360 ),
+        v: ( new Vector({ x: 0, y: 1 }) ).rotateD( Math.random() * 360 ).multiply( Math.random() * 3 ),
+        size: this.mass * .02
+      }));
+    }
+  }
+
+  moveEffect () {
+    if ( this.v.length() > 2 ) {
+      this.canvas.add( new Particle({
+        canvas: this.canvas,
+        x: this.x,
+        y: this.y,
+        d: ( new Vector( this.d ) ).rotateD( Math.random() * 360 ),
+        v: ( new Vector( this.v ) ).rotateD( 180 + ( Math.random() - .5 ) * 30 ),
+        sizeInitial: 3
+      }));
+    }
   }
 
   moveForward () {
@@ -100,6 +128,11 @@ class Unit extends Obj {
     }
   }
 
+  die () {
+    this.explode();
+    this.canvas.remove( this );
+  }
+
   live () {
     this.coolDown();
     this.move();
@@ -109,6 +142,7 @@ class Unit extends Obj {
     this.updateSlots();
     this.calcSegments();
     this.updateColor();
+    this.moveEffect();
 
     if ( this.hp <= 0 ) this.die();
   }
