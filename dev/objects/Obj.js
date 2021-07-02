@@ -81,6 +81,8 @@ class Obj {
   }
 
   live () {
+    this.move();
+    this.rotate();
     this.rotateFigure();
     this.applyPosition();
     this.calcSegments();

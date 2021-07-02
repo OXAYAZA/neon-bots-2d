@@ -26,11 +26,11 @@ Canvas.checkSegmentsIntersection = function ( x1, y1, x2, y2, x3, y3, x4, y4 ) {
 Canvas.checkIntersection = function ( obj1, obj2 ) {
 	let intersect = false;
 
-	outer: for ( let i1 = 0; i1 < obj1.fSegments.length; i1++ ) {
-		for ( let i2 = 0; i2 < obj2.fSegments.length; i2++ ) {
+	outer: for ( let i1 = 0; i1 < obj1.figureSegments.length; i1++ ) {
+		for ( let i2 = 0; i2 < obj2.figureSegments.length; i2++ ) {
 			let
-				segment1 = obj1.fSegments[ i1 ],
-				segment2 = obj2.fSegments[ i2 ],
+				segment1 = obj1.figureSegments[ i1 ],
+				segment2 = obj2.figureSegments[ i2 ],
 				tmp = Canvas.checkSegmentsIntersection(
 					segment1[0].x,
 					segment1[0].y,
@@ -61,11 +61,11 @@ Canvas.prototype.render = function () {
 
 	for ( let u1ID in this.collisionLayer ) {
 		let u1 = this.collisionLayer[ u1ID ];
-		if ( !u1.fSegments ) continue;
+		if ( !u1.figureSegments ) continue;
 
 		for ( let u2ID in this.collisionLayer ) {
 			let u2 = this.collisionLayer[ u2ID ];
-			if ( u1 === u2 || !u2.fSegments ) continue;
+			if ( u1 === u2 || !u2.figureSegments ) continue;
 
 			if ( Canvas.checkIntersection( u1, u2 ) ) {
 				if ( u1.collide ) u1.collision( u2 );

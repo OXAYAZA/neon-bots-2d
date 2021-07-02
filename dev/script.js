@@ -1,7 +1,7 @@
 import Canvas from './objects/Canvas.js';
 import Vector from './util/Vector.js';
 import Unit from './objects/Unit.js';
-// import Bullet from './objects/Bullet.js';
+import Bullet from './objects/Bullet.js';
 import Particle from './objects/Particle.js';
 
 // Debug
@@ -115,18 +115,14 @@ window.addEventListener( 'load', function () {
 	}
 
 	function spawnBullet () {
-		canvas.add( new _Bullet({
+		canvas.add( new Bullet({
 			canvas: canvas,
+			friction: 0,
 			x: Math.random() * canvas.rect.width,
 			y: canvas.rect.height,
 			d: new Vector({ x: 0, y: -1 }),
-			v: new Vector({ x: 0, y: -2 }),
-			fhp: 300,
-			cb: {
-				liveS: function () {
-					this.v.add( ( new Vector( this.d ) ).multiply( .2 ) );
-				}
-			}
+			v: new Vector({ x: 0, y: -8 }),
+			hpInitial: 120
 		}));
 	}
 
@@ -171,7 +167,7 @@ window.addEventListener( 'load', function () {
 	// spawnBoss();
 	// spawnWall();
 	// setInterval( spawnDummy, 500 );
-	// setInterval( spawnBullet, 100 );
+	setInterval( spawnBullet, 100 );
 	setInterval( spawnParticle, 50 );
 
 	setInterval( () => {

@@ -6,7 +6,6 @@ class Unit extends Obj {
   type = 'Unit';
   color = 'hsl( 50, 100%, 50% )';
   collide = true;
-  friction = .05;
   hpInitial = 100;
   figureInitial = [
     { x: 0,  y: 0 },
@@ -52,6 +51,12 @@ class Unit extends Obj {
     this.d.rotateD( 2 );
   }
 
+  collision ( obj ) {
+    if ( obj.type === 'Unit' ) {
+      obj.hp -= 50;
+    }
+  }
+
   live () {
     this.move();
     this.rotate();
@@ -59,6 +64,8 @@ class Unit extends Obj {
     this.applyPosition();
     this.calcSegments();
     this.updateColor();
+
+    if ( this.hp <= 0 ) this.die();
   }
 
   info () {
