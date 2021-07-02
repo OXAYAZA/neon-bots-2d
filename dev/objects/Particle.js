@@ -1,16 +1,12 @@
 import Obj from './Obj.js';
-import Vector from '../util/Vector.js';
 import merge from "../util/merge.js";
 
 class Particle extends Obj {
   type = 'Particle';
-  friction = .05;
   hue = 24;
   saturation = 100;
   lightness = 80;
   sizeInitial = 2;
-  d = new Vector({ x: 1, y: 0 });
-  v = new Vector({ x: 0, y: 0 });
   hpInitial = 100;
   hp = null;
 
@@ -42,23 +38,6 @@ class Particle extends Obj {
         y: point.y * percentage
       };
     });
-  }
-
-  move () {
-    if ( !this.v.isZero() ) {
-      this.v.multiply( 1 - this.friction );
-
-      if ( this.v.length() < .05 ) {
-        this.v.multiply( 0 );
-      }
-    }
-
-    this.x += this.v.x;
-    this.y += this.v.y;
-  }
-
-  rotate () {
-    this.a = this.d.angle();
   }
 
   live () {

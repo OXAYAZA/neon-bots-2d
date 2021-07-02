@@ -1,4 +1,5 @@
 import merge from '../util/merge.js';
+import Vector from "../util/Vector.js";
 
 class Obj {
   canvas;                            // Холст для отрисовки объекта
@@ -6,10 +7,14 @@ class Obj {
   type = 'Object';                   // Тип объекта
   collide = false;                   // Включение проверки столкновений для объекта
   color = 'hsl( 0, 100%, 100% )';    // Цвет заливки объекта
+  friction = .05;                    // Торможение объекта при движении
 
   x = 0;                             // Координата X
   y = 0;                             // Координата Y
   a = 0;                             // Угол поворота объекта в радианах
+
+  d = new Vector({ x: 1, y: 0 });    // Вектор направления объекта
+  v = new Vector({ x: 0, y: 0 });    // Вектор скорости объекта
 
   figureInitial = [                  // Фигура объекта (коллайдер?) при нулевом угле поворота
     { x: 1,  y: 1 },
@@ -56,6 +61,23 @@ class Obj {
     this.figureSegments = this.figureFinal.map( function ( point, index, points ) {
       return [ point, points[ ( points.length > index + 1 ) ? index + 1 : 0 ] ];
     });
+  }
+
+  move () {
+    if ( !this.v.isZero() ) {
+      this.v.multiply( 1 - this.friction );
+
+      if ( this.v.length() < .05 ) {
+        this.v.multiply( 0 );
+      }
+    }
+
+    this.x += this.v.x;
+    this.y += this.v.y;
+  }
+
+  rotate () {
+    this.a = this.d.angle();
   }
 
   live () {

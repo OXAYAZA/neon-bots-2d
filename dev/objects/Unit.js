@@ -1,13 +1,12 @@
 import Obj from './Obj.js';
 import Vector from '../util/Vector.js';
+import merge from "../util/merge.js";
 
 class Unit extends Obj {
   type = 'Unit';
   color = 'hsl( 50, 100%, 50% )';
   collide = true;
   friction = .05;
-  d = new Vector({ x: 1, y: 0 });
-  v = new Vector({ x: 0, y: 0 });
   hpInitial = 100;
   figureInitial = [
     { x: 0,  y: 0 },
@@ -17,29 +16,16 @@ class Unit extends Obj {
     { x: -2,  y: -5 },
     { x: -5,  y: -5 }
   ];
-
   hp = null;
 
   constructor ( props ) {
     super( props );
+    merge( this, props );
     this.hp = this.hpInitial;
   }
 
   updateColor () {
     this.color = `hsl( ${ 100 / this.hpInitial * this.hp }, 100%, 50% )`;
-  }
-
-  move () {
-    if ( !this.v.isZero() ) {
-      this.v.multiply( 1 - this.friction );
-
-      if ( this.v.length() < .05 ) {
-        this.v.multiply( 0 );
-      }
-    }
-
-    this.x += this.v.x;
-    this.y += this.v.y;
   }
 
   moveForward () {
@@ -56,10 +42,6 @@ class Unit extends Obj {
 
   moveRight () {
     this.v.add( ( new Vector( this.d ) ).multiply( .1 ).rotateD( 90 ) );
-  }
-
-  rotate () {
-    this.a = this.d.angle();
   }
 
   rotateLeft () {
