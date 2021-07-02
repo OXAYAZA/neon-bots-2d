@@ -91,6 +91,7 @@ Canvas.prototype.add = function ( obj ) {
 	obj.id = Math.random().toString( 36 ).substr( 2, 9 );
 	this.objects[ obj.id ] = obj;
 	if ( obj.collide ) this.collisionLayer[ obj.id ] = obj;
+	obj.live();
 };
 
 Canvas.prototype.remove = function ( obj ) {
