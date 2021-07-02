@@ -18,7 +18,8 @@ class Obj {
     { x: -1, y: 1 }
   ];
 
-  figureFinal;                       // Финальная фигура объекта, после применения трансформаций
+  figureRaw;                         // Фигура объекта, после применения трансформаций но без учета позиции
+  figureFinal;                       // Финальная фигура объекта, после применения трансформаций и позиции
   figureSegments;                    // Отрезки фигуры, для определения пересечений
 
   constructor ( props = {} ) {
@@ -31,16 +32,22 @@ class Obj {
 
     // Установка новых свойств
     merge( this, props );
-
-    // Применение начального угла поворота
-    this.live();
   }
 
-  rotate () {
-    this.figureFinal = this.figureInitial.map( ( point ) => {
+  rotateFigure ( reTransform ) {
+    this.figureRaw = ( reTransform ? this.figureRaw : this.figureInitial ).map( ( point ) => {
       return {
-        x: this.x + ( point.x * Math.cos( this.a ) - point.y * Math.sin( this.a ) ),
-        y: this.y + ( point.y * Math.cos( this.a ) + point.x * Math.sin( this.a ) )
+        x: point.x * Math.cos( this.a ) - point.y * Math.sin( this.a ),
+        y: point.y * Math.cos( this.a ) + point.x * Math.sin( this.a )
+      };
+    });
+  }
+
+  applyPosition () {
+    this.figureFinal = this.figureRaw.map( ( point ) => {
+      return {
+        x: this.x + point.x,
+        y: this.y + point.y
       };
     });
   }
@@ -52,7 +59,8 @@ class Obj {
   }
 
   live () {
-    this.rotate();
+    this.rotateFigure();
+    this.applyPosition();
     this.calcSegments();
   }
 
