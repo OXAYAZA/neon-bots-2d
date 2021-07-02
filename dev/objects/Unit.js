@@ -1,6 +1,7 @@
 import Obj from './Obj.js';
 import Vector from '../util/Vector.js';
 import merge from "../util/merge.js";
+import Bullet from "./Bullet.js";
 
 class Unit extends Obj {
   type = 'Unit';
@@ -15,6 +16,12 @@ class Unit extends Obj {
     { x: -2,  y: -5 },
     { x: -5,  y: -5 }
   ];
+  reloadTime = 5;
+  reloading = false;
+  bulletSlots = [
+    { x: 11, y: 0 }
+  ];
+  bulletSlotsFinal = null;
   hp = null;
 
   constructor ( props ) {
@@ -57,11 +64,49 @@ class Unit extends Obj {
     }
   }
 
+  updateSlots () {
+    this.bulletSlotsFinal = this.bulletSlots.map( ( point ) => {
+      return {
+        x: this.x + ( point.x * Math.cos( this.a ) - point.y * Math.sin( this.a ) ),
+        y: this.y + ( point.y * Math.cos( this.a ) + point.x * Math.sin( this.a ) )
+      };
+    });
+  }
+
+  coolDown () {
+    if ( this.reloading ) {
+      if ( this.reloading > 0 ) {
+        this.reloading -= 1;
+      } else {
+        this.reloading = false;
+      }
+    }
+  }
+
+  shot () {
+    if ( !this.reloading ) {
+      this.bulletSlotsFinal.forEach( ( point ) => {
+        this.canvas.add( new Bullet({
+          canvas: this.canvas,
+          friction: 0,
+          x: point.x,
+          y: point.y,
+          d: new Vector( this.d ),
+          v: ( new Vector( this.d ) ).multiply( 10 )
+        }));
+      });
+
+      this.reloading = this.reloadTime;
+    }
+  }
+
   live () {
+    this.coolDown();
     this.move();
     this.rotate();
     this.rotateFigure();
     this.applyPosition();
+    this.updateSlots();
     this.calcSegments();
     this.updateColor();
 

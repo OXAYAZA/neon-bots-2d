@@ -1,5 +1,4 @@
 import Obj from './Obj.js';
-import Vector from '../util/Vector.js';
 import merge from "../util/merge.js";
 
 class Bullet extends Obj {

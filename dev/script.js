@@ -210,7 +210,7 @@ window.addEventListener( 'load', function () {
 		}
 
 		if ( window.keys[ 'Space' ] ) {
-			hero.fire();
+			hero.shot();
 		}
 	}, 10 );
 });
