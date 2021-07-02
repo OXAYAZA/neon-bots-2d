@@ -14,7 +14,7 @@ class Particle extends Obj {
     super( props );
     merge( this, props );
 
-    this.color = `hsla(${this.hue}, ${this.saturation}%, ${this.lightness}%)`;
+    this.color = `hsl(${this.hue}, ${this.saturation}%, ${this.lightness}%)`;
     this.hp = this.hpInitial;
     this.figureInitial = this.figureInitial.map( ( point ) => {
       return {

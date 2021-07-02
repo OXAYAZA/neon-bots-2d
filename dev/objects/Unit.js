@@ -22,7 +22,7 @@ class Unit extends Obj {
   reloadTime = 5;
   reloading = false;
   bulletSlots = [
-    { x: 11, y: 0 }
+    { x: 11, y: 0, a: 0 }
   ];
   bulletSlotsFinal = null;
   hp = null;
@@ -44,7 +44,7 @@ class Unit extends Obj {
         x: this.x,
         y: this.y,
         d: new Vector({ x: 0, y: 1 }).rotateD( Math.random() * 360 ),
-        v: ( new Vector({ x: 0, y: 1 }) ).rotateD( Math.random() * 360 ).multiply( Math.random() * 3 ),
+        v: ( new Vector({ x: 0, y: 1 }) ).rotateD( Math.random() * 360 ).multiply( Math.random() * 2 ),
         size: this.mass * .02
       }));
     }
@@ -97,7 +97,8 @@ class Unit extends Obj {
     this.bulletSlotsFinal = this.bulletSlots.map( ( point ) => {
       return {
         x: this.x + ( point.x * Math.cos( this.a ) - point.y * Math.sin( this.a ) ),
-        y: this.y + ( point.y * Math.cos( this.a ) + point.x * Math.sin( this.a ) )
+        y: this.y + ( point.y * Math.cos( this.a ) + point.x * Math.sin( this.a ) ),
+        a: point.a
       };
     });
   }
@@ -118,10 +119,11 @@ class Unit extends Obj {
         this.canvas.add( new Bullet({
           canvas: this.canvas,
           friction: 0,
+          color: 'rgb(255, 0, 255)',
           x: point.x,
           y: point.y,
-          d: new Vector( this.d ),
-          v: ( new Vector( this.d ) ).multiply( 10 )
+          d: ( new Vector( this.d ) ).rotate( point.a ),
+          v: ( new Vector( this.d ) ).multiply( 10 ).rotate( point.a ).rotateD( ( Math.random() - .5 ) * 10 )
         }));
       });
 

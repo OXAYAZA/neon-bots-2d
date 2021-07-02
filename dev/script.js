@@ -68,14 +68,14 @@ window.addEventListener( 'load', function () {
 	}
 
 	function spawnDummy () {
-		canvas.add( new _Unit({
+		canvas.add( new Unit({
 			canvas: canvas,
-			x: Math.random() * canvas.rect.width,
-			y: 10,
-			d: ( new Vector({ x: 0, y: 1 }) ).rotateD( ( Math.random() - .5 ) * 90 ),
-			fhp: 40,
+			x: canvas.rect.width / 2,
+			y: 100,
+			d: ( new Vector({ x: 0, y: 1 }) ),
+			v: ( new Vector({ x: 0, y: 10 }) ),
 			mass: 100,
-			points: [
+			figureInitial: [
 				{ x: 20, y: -3 },
 				{ x: 10,   y: -10 },
 				{ x: -10,  y: -10 },
@@ -83,13 +83,7 @@ window.addEventListener( 'load', function () {
 				{ x: -10,  y: 10 },
 				{ x: 10,  y: 10 },
 				{ x: 20, y: 3 }
-			],
-			cb: {
-				liveS: function () {
-					this.v.add( ( new Vector( this.d ) ).multiply( .13 ) );
-					this.hp -= .1;
-				}
-			}
+			]
 		}));
 	}
 
@@ -162,6 +156,7 @@ window.addEventListener( 'load', function () {
 	spawnHero();
 	// spawnBoss();
 	spawnWall();
+	spawnDummy();
 	// setInterval( spawnDummy, 500 );
 	setInterval( spawnBullet, 100 );
 	setInterval( spawnParticle, 50 );
