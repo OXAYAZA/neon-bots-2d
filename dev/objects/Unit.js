@@ -6,9 +6,12 @@ import Bullet from "./Bullet.js";
 
 class Unit extends Obj {
   type = 'Unit';
-  color = 'hsl( 50, 100%, 50% )';
+  // color = 'hsl( 50, 100%, 50% )';
+  color = 'rgb( 0, 255, 100 )';
   collide = true;
   alive = true;
+  mind;
+  fraction = null;
   hpInitial = 100;
   figureInitial = [
     { x: 0,  y: 0 },
@@ -31,11 +34,15 @@ class Unit extends Obj {
     super( props );
     merge( this, props );
     this.hp = this.hpInitial;
+
+    if ( this.mind ) {
+      this.mind = new this.mind( this );
+    }
   }
 
-  updateColor () {
-    this.color = `hsl( ${ 100 / this.hpInitial * this.hp }, 100%, 50% )`;
-  }
+  // updateColor () {
+  //   this.color = `hsl( ${ 100 / this.hpInitial * this.hp }, 100%, 50% )`;
+  // }
 
   explode () {
     for ( let i = 0; i < this.mass; i++ ) {
@@ -119,7 +126,6 @@ class Unit extends Obj {
         this.canvas.add( new Bullet({
           canvas: this.canvas,
           friction: 0,
-          color: 'rgb(255, 0, 255)',
           x: point.x,
           y: point.y,
           d: ( new Vector( this.d ) ).rotate( point.a ),
@@ -145,8 +151,12 @@ class Unit extends Obj {
     this.applyPosition();
     this.updateSlots();
     this.calcSegments();
-    this.updateColor();
+    // this.updateColor();
     this.moveEffect();
+
+    if ( this.mind ) {
+      this.mind.act();
+    }
 
     if ( this.hp <= 0 ) this.die();
   }
@@ -154,15 +164,13 @@ class Unit extends Obj {
   info () {
     return {
       id: this.id,
-      type: this.type,
-      collide: this.collide,
       color: this.color,
+      alive: this.alive,
       x: this.x,
       y: this.y,
       a: this.a,
-      d: this.d,
-      v: this.v,
-      hp: this.hp
+      hp: this.hp,
+      mind: this.mind && this.mind.info()
     };
   }
 }

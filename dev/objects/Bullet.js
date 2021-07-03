@@ -4,7 +4,7 @@ import Obj from './Obj.js';
 import Particle from "./Particle.js";
 
 class Bullet extends Obj {
-  type = 'Unit';
+  type = 'Bullet';
   color = 'rgb( 255, 0, 0 )';
   collide = true;
   damage = 10;

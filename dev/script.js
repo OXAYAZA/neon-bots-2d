@@ -1,8 +1,9 @@
 import Canvas from './objects/Canvas.js';
 import Vector from './util/Vector.js';
-import Unit from './objects/Unit.js';
-import Bullet from './objects/Bullet.js';
 import Particle from './objects/Particle.js';
+import Unit from './objects/Unit.js';
+import Dummy from './objects/Dummy.js';
+import Simple from './bots/Simple.js';
 
 // Debug
 function debug ( data ) {
@@ -28,91 +29,27 @@ window.addEventListener( 'load', function () {
 		canvas.add( hero );
 	}
 
-	function spawnBoss () {
-		canvas.add( new _Unit({
+	function spawnRed () {
+		canvas.add( new Dummy({
 			canvas: canvas,
-			x: canvas.rect.width / 2,
-			y: canvas.rect.height * .1,
-			d: new Vector({ x: 1, y: 0 }),
-			fhp: 2000,
-			mass: 200,
-			reloadTime: 10,
-			figureInitial: [
-				{ x: 0,  y: 0 },
-				{ x: -10,  y: -10 },
-				{ x: 0,  y: -50 },
-				{ x: 20,   y: -50 },
-				{ x: 60,  y: -10 },
-				{ x: 60,  y: 10 },
-				{ x: 20,  y: 50 },
-				{ x: 0,  y: 50 },
-				{ x: -10,  y: 10 }
-			],
-			bulletSlots: [
-				{ x: 21, y: -50 },
-				{ x: 61, y: -10 },
-				{ x: 61, y: 10 },
-				{ x: 21, y: 50 },
-			],
-			cb: {
-				liveS: function () {
-					this.v.add( ( new Vector( this.d ) ).multiply( .2 ) );
-					this.d.rotateD( .6 );
-				},
-				liveE: function () {
-					this.fire();
-				},
-				die: spawnBoss
-			}
+			mind: Simple,
+			fraction: 'red',
+			color: 'rgb(255, 0, 100)',
+			x: -20,
+			y: Math.random() * canvas.rect.height,
+			d: ( new Vector({ x: 1, y: 0 }) )
 		}));
 	}
 
-	function spawnDummy () {
-		canvas.add( new Unit({
+	function spawnBlue () {
+		canvas.add( new Dummy({
 			canvas: canvas,
-			x: canvas.rect.width / 2,
-			y: 100,
-			d: ( new Vector({ x: 0, y: 1 }) ),
-			v: ( new Vector({ x: 0, y: 10 }) ),
-			mass: 100,
-			figureInitial: [
-				{ x: 20, y: -3 },
-				{ x: 10,   y: -10 },
-				{ x: -10,  y: -10 },
-				{ x: 0,  y: 0 },
-				{ x: -10,  y: 10 },
-				{ x: 10,  y: 10 },
-				{ x: 20, y: 3 }
-			]
-		}));
-	}
-
-	function spawnWall () {
-		canvas.add( new Unit({
-			canvas: canvas,
-			x: canvas.rect.width * .95,
-			y: canvas.rect.height / 2,
-			d: new Vector({ x: 0, y: -1 }),
-			mass: 1000,
-			hpInitial: 8000,
-			figureInitial: [
-				{ x: 200,  y: 0 },
-				{ x: 200,  y: 10 },
-				{ x: -200,  y: 10 },
-				{ x: -200,  y: 0 },
-			]
-		}));
-	}
-
-	function spawnBullet () {
-		canvas.add( new Bullet({
-			canvas: canvas,
-			friction: 0,
-			x: Math.random() * canvas.rect.width,
-			y: canvas.rect.height,
-			d: new Vector({ x: 0, y: -1 }),
-			v: new Vector({ x: 0, y: -8 }),
-			hpInitial: 120
+			mind: Simple,
+			fraction: 'blue',
+			color: 'rgb(0, 100, 255)',
+			x: canvas.rect.width + 20,
+			y: Math.random() * canvas.rect.height,
+			d: ( new Vector({ x: -1, y: 0 }) )
 		}));
 	}
 
@@ -121,9 +58,9 @@ window.addEventListener( 'load', function () {
 			canvas: canvas,
 			friction: 0,
 			x: Math.random() * canvas.rect.width,
-			y: canvas.rect.height,
+			y: 0,
 			d: new Vector({ x: 0, y: -1 }),
-			v: new Vector({ x: 0, y: -5 }),
+			v: new Vector({ x: 0, y: 5 }),
 			hpInitial: Math.random() * 400
 		}));
 	}
@@ -154,17 +91,15 @@ window.addEventListener( 'load', function () {
 	});
 
 	spawnHero();
-	// spawnBoss();
-	spawnWall();
-	spawnDummy();
-	// setInterval( spawnDummy, 500 );
-	setInterval( spawnBullet, 100 );
+	setInterval( spawnRed, 1000 );
+	setInterval( spawnBlue, 1000 );
 	setInterval( spawnParticle, 50 );
 
 	setInterval( () => {
 		debug( {
 			objects: Object.keys( canvas.objects ).length,
 			collisionLayer: Object.keys( canvas.collisionLayer ).length,
+			unitLayer: Object.keys( canvas.unitLayer ).length,
 			keys: window.keys,
 			hero: hero.info()
 		});

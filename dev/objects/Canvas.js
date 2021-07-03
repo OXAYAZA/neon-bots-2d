@@ -5,6 +5,7 @@ function Canvas () {
 	this.rect = null;
 	this.objects = {};
 	this.collisionLayer = {};
+	this.unitLayer = {};
 	this.state = 'play';
 	this.node.canvas = this;
 
@@ -91,12 +92,14 @@ Canvas.prototype.add = function ( obj ) {
 	obj.id = Math.random().toString( 36 ).substr( 2, 9 );
 	this.objects[ obj.id ] = obj;
 	if ( obj.collide ) this.collisionLayer[ obj.id ] = obj;
+	if ( obj.type === 'Unit' ) this.unitLayer[ obj.id ] = obj;
 	obj.live();
 };
 
 Canvas.prototype.remove = function ( obj ) {
 	delete this.objects[ obj.id ];
 	if ( obj.collide ) delete this.collisionLayer[ obj.id ];
+	if ( obj.type === 'Unit' ) delete this.unitLayer[ obj.id ];
 };
 
 export default Canvas;
