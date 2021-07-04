@@ -169,6 +169,8 @@ class Unit extends Obj {
       x: this.x,
       y: this.y,
       a: this.a,
+      d: this.d,
+      v: this.v,
       hp: this.hp,
       mind: this.mind && this.mind.info()
     };

@@ -27,13 +27,17 @@ class Simple {
 	}
 
 	calculate () {
-		this.distance = Math.sqrt( Math.pow( this.target.x - this.body.x, 2 ) + Math.pow( this.target.y - this.body.y, 2 ) );
 		this.direction = new Vector({ x: this.target.x - this.body.x, y: this.target.y - this.body.y });
-		this.angle = this.direction.angle();
+		this.distance = this.direction.length();
+		this.angle = Math.acos(
+			( ( this.direction.x * this.body.d.x ) + ( this.direction.y * this.body.d.y ) ) /
+			( this.direction.length() * this.body.d.length() )
+		);
 	}
 
 	rotate () {
-		if ( this.angle < this.body.a ) {
+		// if ( this.angle < 0 ) {
+		if ( this.direction.angle() < this.body.a ) {
 			this.body.rotateLeft();
 		} else {
 			this.body.rotateRight();
@@ -63,16 +67,16 @@ class Simple {
 			this.calculate();
 			this.rotate();
 			this.move();
-			this.attack();
+			// this.attack();
 		}
 	}
 
 	info () {
 		return {
 			target: this.target && this.target.type,
+			direction: this.direction,
 			distance: this.distance,
-			angle: this.angle,
-			direction: this.direction
+			angle: this.angle
 		};
 	}
 }
