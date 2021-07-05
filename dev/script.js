@@ -17,18 +17,32 @@ window.addEventListener( 'load', function () {
 		btnPause = document.querySelector( '#pause' ),
 		btnTick = document.querySelector( '#tick' ),
 		canvas = window.canvas = new Canvas(),
-		hero = null,
-		tmp = null;
+		hero = null;
 
 	function spawnHero () {
 		hero = window.hero = new Unit({
 			canvas: canvas,
+			fraction: 'green',
 			x: canvas.rect.width / 2,
 			y: canvas.rect.height / 2
 		});
 
 		canvas.add( hero );
 		return hero;
+	}
+
+	function spawnGreen () {
+		let unit = new Unit({
+			canvas: canvas,
+			mind: Simple,
+			fraction: 'green',
+			x: Math.random() * canvas.rect.width,
+			y: canvas.rect.height + 20,
+			d: new Vector({ x: 0, y: -1 })
+		});
+
+		canvas.add( unit );
+		return unit;
 	}
 
 	function spawnRed () {
@@ -54,8 +68,7 @@ window.addEventListener( 'load', function () {
 			color: 'rgb(0, 100, 255)',
 			x: canvas.rect.width + 20,
 			y: Math.random() * canvas.rect.height,
-			d: ( new Vector({ x: -1, y: 0 }) ),
-			v: ( new Vector({ x: -30, y: 0 }) )
+			d: ( new Vector({ x: -1, y: 0 }) )
 		});
 
 		canvas.add( unit );
@@ -100,9 +113,9 @@ window.addEventListener( 'load', function () {
 	});
 
 	spawnHero();
-	tmp = window.tmp = spawnBlue();
-	// setInterval( spawnRed, 1000 );
-	// setInterval( spawnBlue, 1000 );
+	setInterval( spawnRed, 1000 );
+	setInterval( spawnBlue, 1000 );
+	setInterval( spawnGreen, 1000 );
 	setInterval( spawnParticle, 50 );
 
 	setInterval( () => {
@@ -111,8 +124,7 @@ window.addEventListener( 'load', function () {
 			collisionLayer: Object.keys( canvas.collisionLayer ).length,
 			unitLayer: Object.keys( canvas.unitLayer ).length,
 			keys: window.keys,
-			hero: hero.info(),
-			tmp: tmp.info()
+			hero: hero.info()
 		});
 	}, 50 );
 

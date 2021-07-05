@@ -29,18 +29,24 @@ class Simple {
 	calculate () {
 		this.direction = new Vector({ x: this.target.x - this.body.x, y: this.target.y - this.body.y });
 		this.distance = this.direction.length();
-		this.angle = Math.acos(
-			( ( this.direction.x * this.body.d.x ) + ( this.direction.y * this.body.d.y ) ) /
-			( this.direction.length() * this.body.d.length() )
-		);
+		// this.angle = Math.acos(
+		// 	( ( this.direction.x * this.body.d.x ) + ( this.direction.y * this.body.d.y ) ) /
+		// 	( this.direction.length() * this.body.d.length() )
+		// );
+		this.angle =
+			Math.atan2( this.body.d.x, this.body.d.y ) -
+			Math.atan2( this.direction.x, this.direction.y ) ;
 	}
 
 	rotate () {
-		// if ( this.angle < 0 ) {
-		if ( this.direction.angle() < this.body.a ) {
+		if ( this.angle < 0 && this.angle > - Math.PI ) {
 			this.body.rotateLeft();
-		} else {
+		} else if ( this.angle < 0 && this.angle < - Math.PI ) {
 			this.body.rotateRight();
+		} else if ( this.angle > 0 && this.angle < Math.PI ) {
+			this.body.rotateRight();
+		} else if ( this.angle > 0 && this.angle > Math.PI ) {
+			this.body.rotateLeft();
 		}
 	}
 
@@ -67,7 +73,7 @@ class Simple {
 			this.calculate();
 			this.rotate();
 			this.move();
-			// this.attack();
+			this.attack();
 		}
 	}
 

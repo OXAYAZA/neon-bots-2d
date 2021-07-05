@@ -34,10 +34,6 @@ class Unit extends Obj {
     super( props );
     merge( this, props );
     this.hp = this.hpInitial;
-
-    if ( this.mind ) {
-      this.mind = new this.mind( this );
-    }
   }
 
   // updateColor () {
@@ -153,6 +149,10 @@ class Unit extends Obj {
     this.calcSegments();
     // this.updateColor();
     this.moveEffect();
+
+    if ( this.mind && this.mind.prototype ) {
+      this.mind = new this.mind( this );
+    }
 
     if ( this.mind ) {
       this.mind.act();

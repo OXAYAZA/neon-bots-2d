@@ -1,3 +1,4 @@
+import merge from "../util/merge.js";
 import Unit from './Unit.js';
 
 class Dummy extends Unit {
@@ -15,6 +16,11 @@ class Dummy extends Unit {
 	bulletSlots = [
 		{ x: 21, y: 0, a: 0 }
 	];
+
+	constructor ( props ) {
+		super( props );
+		merge( this, props );
+	}
 }
 
 export default Dummy;
