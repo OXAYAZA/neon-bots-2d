@@ -1,9 +1,12 @@
-import Canvas from './objects/Canvas.js';
+import Canvas from './util/Canvas.js';
 import Vector from './util/Vector.js';
 import Particle from './objects/Particle.js';
 import Unit from './objects/Unit.js';
 import Dummy from './objects/Dummy.js';
 import Simple from './bots/Simple.js';
+import Manual from './bots/Manual.js';
+
+window.Vector = Vector;
 
 // Debug
 function debug ( data ) {
@@ -16,13 +19,24 @@ window.addEventListener( 'load', function () {
 		btnPlay = document.querySelector( '#play' ),
 		btnPause = document.querySelector( '#pause' ),
 		btnTick = document.querySelector( '#tick' ),
-		canvas = window.canvas = new Canvas(),
-		hero = null;
+		canvas = window.canvas = new Canvas({
+			middle: function () {
+				if ( window.keys && window.keys[ 'KeyR' ] ) {
+					if ( window.hero && window.hero.alive ) window.hero.die();
+					window.spawnHero();
+				}
+			}
+		}),
+		hero = null,
+		enemies = window.enemies = {},
+		allies = window.allies = {};
 
-	function spawnHero () {
+	window.spawnHero = function spawnHero () {
 		hero = window.hero = new Unit({
 			canvas: canvas,
-			fraction: 'green',
+			mind: Manual,
+			fraction: 'ally',
+			hpInitial: 1000,
 			x: canvas.rect.width / 2,
 			y: canvas.rect.height / 2
 		});
@@ -31,48 +45,46 @@ window.addEventListener( 'load', function () {
 		return hero;
 	}
 
-	function spawnGreen () {
-		let unit = new Unit({
-			canvas: canvas,
-			mind: Simple,
-			fraction: 'green',
-			x: Math.random() * canvas.rect.width,
-			y: canvas.rect.height + 20,
-			d: new Vector({ x: 0, y: -1 })
-		});
+	function spawnAlly () {
+		if ( Object.keys( allies ).length < 1 ) {
+			let unit = new Unit( {
+				canvas:     canvas,
+				mind:       Simple,
+				fraction:   'ally',
+				color:      'rgb(0, 100, 255)',
+				x:          Math.random() * canvas.rect.width,
+				y:          canvas.rect.height,
+				d:          (new Vector( { x: 0, y: -1 } )),
+				onDead:     function () {
+					delete allies[ this.id ];
+				}
+			});
 
-		canvas.add( unit );
-		return unit;
+			canvas.add( unit );
+			allies[ unit.id ] = unit;
+			return unit;
+		}
 	}
 
-	function spawnRed () {
-		let unit = new Dummy({
-			canvas: canvas,
-			mind: Simple,
-			fraction: 'red',
-			color: 'rgb(255, 0, 100)',
-			x: -20,
-			y: Math.random() * canvas.rect.height,
-			d: ( new Vector({ x: 1, y: 0 }) )
-		});
+	function spawnEnemy () {
+		if ( Object.keys( enemies ).length < 10 ) {
+			let unit = new Dummy( {
+				canvas:   canvas,
+				mind:     Simple,
+				fraction: 'enemy',
+				color:    'rgb(255, 0, 100)',
+				x:        Math.random() * canvas.rect.width,
+				y:        0,
+				d:        (new Vector( { x: 0, y: 1 } )),
+				onDead:   function () {
+					delete enemies[ this.id ];
+				}
+			});
 
-		canvas.add( unit );
-		return unit;
-	}
-
-	function spawnBlue () {
-		let unit = new Dummy({
-			canvas: canvas,
-			mind: Simple,
-			fraction: 'blue',
-			color: 'rgb(0, 100, 255)',
-			x: canvas.rect.width + 20,
-			y: Math.random() * canvas.rect.height,
-			d: ( new Vector({ x: -1, y: 0 }) )
-		});
-
-		canvas.add( unit );
-		return unit;
+			canvas.add( unit );
+			enemies[ unit.id ] = unit;
+			return unit;
+		}
 	}
 
 	function spawnParticle () {
@@ -82,8 +94,8 @@ window.addEventListener( 'load', function () {
 			x: Math.random() * canvas.rect.width,
 			y: 0,
 			d: new Vector({ x: 0, y: -1 }),
-			v: new Vector({ x: 0, y: 5 }),
-			hpInitial: Math.random() * 400
+			v: new Vector({ x: 0, y: 300 }),
+			hpInitial: Math.random() * 5
 		}));
 	}
 
@@ -113,9 +125,8 @@ window.addEventListener( 'load', function () {
 	});
 
 	spawnHero();
-	setInterval( spawnRed, 1000 );
-	setInterval( spawnBlue, 1000 );
-	setInterval( spawnGreen, 1000 );
+	setInterval( spawnEnemy, 1000 );
+	setInterval( spawnAlly, 5000 );
 	setInterval( spawnParticle, 50 );
 
 	setInterval( () => {
@@ -123,43 +134,12 @@ window.addEventListener( 'load', function () {
 			objects: Object.keys( canvas.objects ).length,
 			collisionLayer: Object.keys( canvas.collisionLayer ).length,
 			unitLayer: Object.keys( canvas.unitLayer ).length,
+			lastTime: canvas.lastTime,
+			deltaTime: canvas.deltaTime,
 			keys: window.keys,
+			allies: Object.keys( allies ).length,
+			enemies: Object.keys( enemies ).length,
 			hero: hero.info()
 		});
 	}, 50 );
-
-	setInterval( () => {
-		if ( window.keys[ 'KeyR' ] ) {
-			if ( hero && hero.alive ) hero.die();
-			spawnHero();
-		}
-
-		if ( window.keys[ 'KeyW' ] ) {
-			hero.moveForward();
-		}
-
-		if ( window.keys[ 'KeyS' ] ) {
-			hero.moveBackward();
-		}
-
-		if ( window.keys[ 'KeyQ' ] ) {
-			hero.moveLeft();
-		}
-
-		if ( window.keys[ 'KeyE' ] ) {
-			hero.moveRight();
-		}
-
-		if ( window.keys[ 'KeyA' ] ) {
-			hero.rotateLeft();
-		}
-
-		if ( window.keys[ 'KeyD' ] ) {
-			hero.rotateRight();
-		}
-
-		if ( window.keys[ 'Space' ] ) {
-			hero.shot();
-		}
-	}, 10 );
 });

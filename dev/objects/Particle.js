@@ -7,7 +7,7 @@ class Particle extends Obj {
   saturation = 100;
   lightness = 80;
   sizeInitial = 2;
-  hpInitial = 50;
+  hpInitial = .3;
   hp = null;
 
   constructor ( props ) {
@@ -40,8 +40,9 @@ class Particle extends Obj {
     });
   }
 
-  live () {
-    this.hp -= 1;
+  live ( delta = 0 ) {
+    this.delta = delta;
+    this.hp -= this.delta;
 
     this.move();
     this.rotate();

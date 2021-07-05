@@ -22,10 +22,10 @@ class Unit extends Obj {
     { x: -5,  y: -5 }
   ];
   mass = 50;
-  reloadTime = 5;
+  reloadTime = .1;
   reloading = false;
   bulletSlots = [
-    { x: 11, y: 0, a: 0 }
+    { x: 20, y: 0, a: 0 }
   ];
   bulletSlotsFinal = null;
   hp = null;
@@ -47,7 +47,7 @@ class Unit extends Obj {
         x: this.x,
         y: this.y,
         d: new Vector({ x: 0, y: 1 }).rotateD( Math.random() * 360 ),
-        v: ( new Vector({ x: 0, y: 1 }) ).rotateD( Math.random() * 360 ).multiply( Math.random() * 2 ),
+        v: ( new Vector({ x: 0, y: 300 }) ).rotateD( Math.random() * 360 ).multiply( Math.random() * 2 ),
         size: this.mass * .02
       }));
     }
@@ -67,27 +67,27 @@ class Unit extends Obj {
   }
 
   moveForward () {
-    this.v.add( ( new Vector( this.d ) ).multiply( .2 ) );
+    this.v.add( ( new Vector( this.d ) ).multiply( 20 ) );
   }
 
   moveBackward () {
-    this.v.add( ( new Vector( this.d ) ).multiply( .1 ).rotateD( 180 ) );
+    this.v.add( ( new Vector( this.d ) ).multiply( 10 ).rotateD( 180 ) );
   }
 
   moveLeft () {
-    this.v.add( ( new Vector( this.d ) ).multiply( .1 ).rotateD( -90 ) );
+    this.v.add( ( new Vector( this.d ) ).multiply( 10 ).rotateD( -90 ) );
   }
 
   moveRight () {
-    this.v.add( ( new Vector( this.d ) ).multiply( .1 ).rotateD( 90 ) );
+    this.v.add( ( new Vector( this.d ) ).multiply( 10 ).rotateD( 90 ) );
   }
 
   rotateLeft () {
-    this.d.rotateD( -2 );
+    this.d.rotate( -1 * Math.PI * this.delta );
   }
 
   rotateRight () {
-    this.d.rotateD( 2 );
+    this.d.rotate( Math.PI * this.delta );
   }
 
   collision ( obj ) {
@@ -109,7 +109,7 @@ class Unit extends Obj {
   coolDown () {
     if ( this.reloading ) {
       if ( this.reloading > 0 ) {
-        this.reloading -= 1;
+        this.reloading -= this.delta;
       } else {
         this.reloading = false;
       }
@@ -125,7 +125,7 @@ class Unit extends Obj {
           x: point.x,
           y: point.y,
           d: ( new Vector( this.d ) ).rotate( point.a ),
-          v: ( new Vector( this.d ) ).multiply( 10 ).rotate( point.a ).rotateD( ( Math.random() - .5 ) * 10 )
+          v: ( new Vector( this.d ) ).multiply( 500 ).rotate( point.a ).rotateD( ( Math.random() - .5 ) * 10 )
         }));
       });
 
@@ -137,9 +137,12 @@ class Unit extends Obj {
     this.explode();
     this.alive = false;
     this.canvas.remove( this );
+    if ( this.onDead instanceof Function ) this.onDead.call( this );
   }
 
-  live () {
+  live ( delta = 0 ) {
+    this.delta = delta;
+
     this.coolDown();
     this.move();
     this.rotate();
@@ -166,11 +169,13 @@ class Unit extends Obj {
       id: this.id,
       color: this.color,
       alive: this.alive,
+      reloading: this.reloading,
       x: this.x,
       y: this.y,
       a: this.a,
       d: this.d,
       v: this.v,
+      vl: this.v.length(),
       hp: this.hp,
       mind: this.mind && this.mind.info()
     };

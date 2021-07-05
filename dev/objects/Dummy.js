@@ -3,7 +3,7 @@ import Unit from './Unit.js';
 
 class Dummy extends Unit {
 	mass = 200;
-	reloadTime = 20;
+	reloadTime = .4;
 	figureInitial = [
 		{ x: 20, y: -3 },
 		{ x: 10,   y: -10 },
@@ -14,7 +14,7 @@ class Dummy extends Unit {
 		{ x: 20, y: 3 }
 	];
 	bulletSlots = [
-		{ x: 21, y: 0, a: 0 }
+		{ x: 30, y: 0, a: 0 }
 	];
 
 	constructor ( props ) {

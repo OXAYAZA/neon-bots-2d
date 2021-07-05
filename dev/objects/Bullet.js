@@ -8,7 +8,7 @@ class Bullet extends Obj {
   color = 'rgb( 255, 0, 0 )';
   collide = true;
   damage = 10;
-  hpInitial = 50;
+  hpInitial = 1;
   figureInitial = [
     { x: -3, y: -2 },
     { x: -3, y: 2 },
@@ -42,8 +42,9 @@ class Bullet extends Obj {
     this.die();
   }
 
-  live () {
-    this.hp -= 1;
+  live ( delta = 0 ) {
+    this.delta = delta;
+    this.hp -= this.delta;
 
     this.move();
     this.rotate();

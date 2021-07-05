@@ -4,6 +4,7 @@ import Vector from "../util/Vector.js";
 class Obj {
   canvas;                            // Холст для отрисовки объекта
   id;                                // Уникальный идентификатор объекта (обычно устанавливается холстом)
+  delta = 0;                         // Коррекция по времени
   type = 'Object';                   // Тип объекта
   collide = false;                   // Включение проверки столкновений для объекта
   color = 'hsl( 0, 100%, 100% )';    // Цвет заливки объекта
@@ -26,6 +27,8 @@ class Obj {
   figureRaw;                         // Фигура объекта, после применения трансформаций но без учета позиции
   figureFinal;                       // Финальная фигура объекта, после применения трансформаций и позиции
   figureSegments;                    // Отрезки фигуры, для определения пересечений
+
+  onDead = null;                     // Посмертный колбек
 
   constructor ( props = {} ) {
     // Проверка параметров
@@ -72,15 +75,17 @@ class Obj {
       }
     }
 
-    this.x += this.v.x;
-    this.y += this.v.y;
+    this.x = this.x + ( this.v.x * this.delta );
+    this.y = this.y + ( this.v.y * this.delta );
   }
 
   rotate () {
     this.a = this.d.angle();
   }
 
-  live () {
+  live ( delta = 0 ) {
+    this.delta = delta;
+
     this.move();
     this.rotate();
     this.rotateFigure();
@@ -90,6 +95,7 @@ class Obj {
 
   die () {
     this.canvas.remove( this );
+    if ( this.onDead instanceof Function ) this.onDead.call( this );
   }
 
   render () {
@@ -108,12 +114,15 @@ class Obj {
   info () {
     return {
       id: this.id,
+      delta: this.delta,
       type: this.type,
       collide: this.collide,
       color: this.color,
       x: this.x,
       y: this.y,
-      a: this.a
+      a: this.a,
+      d: this.d,
+      v: this.v
     };
   }
 }

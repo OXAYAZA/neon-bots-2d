@@ -1,13 +1,20 @@
+import merge from './merge.js'
+
 // Canvas prototype
-function Canvas () {
+function Canvas ( props ) {
 	this.node = document.getElementById( 'root' );
 	this.ctx = this.node.getContext( '2d' );
+	this.middle = null;
 	this.rect = null;
 	this.objects = {};
 	this.collisionLayer = {};
 	this.unitLayer = {};
 	this.state = 'play';
 	this.node.canvas = this;
+	this.deltaTime = 0;
+	this.lastTime = 0;
+
+	merge( this, props );
 
 	this.resize();
 	window.addEventListener( 'resize', this.resize.bind( this ) );
@@ -53,10 +60,12 @@ Canvas.checkIntersection = function ( obj1, obj2 ) {
 	return intersect;
 };
 
-Canvas.prototype.render = function () {
+Canvas.prototype.render = function ( currentTime = 0 ) {
 	if ( this.state === 'play' ) {
 		requestAnimationFrame( this.render.bind( this ) );
 	}
+
+	this.deltaTime = currentTime - this.lastTime;
 
 	this.ctx.clearRect( 0, 0, this.rect.width, this.rect.height );
 
@@ -75,11 +84,15 @@ Canvas.prototype.render = function () {
 		}
 	}
 
+	if ( this.middle instanceof Function ) this.middle.call( this );
+
 	for ( let id in this.objects ) {
 		let obj = this.objects[ id ];
-		obj.live();
+		obj.live( this.deltaTime / 1000 );
 		obj.render();
 	}
+
+	this.lastTime = currentTime;
 };
 
 Canvas.prototype.resize = function () {
