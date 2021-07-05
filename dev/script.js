@@ -1,5 +1,7 @@
 import Canvas from './util/Canvas.js';
 import Vector from './util/Vector.js';
+import TouchController from './util/TouchController.js';
+
 import Particle from './objects/Particle.js';
 import Unit from './objects/Unit.js';
 import Dummy from './objects/Dummy.js';
@@ -31,6 +33,8 @@ window.addEventListener( 'load', function () {
 		enemies = window.enemies = {},
 		allies = window.allies = {};
 
+	new TouchController( document.querySelector( '#direction-control' ) );
+
 	window.spawnHero = function spawnHero () {
 		hero = window.hero = new Unit({
 			canvas: canvas,
@@ -38,7 +42,9 @@ window.addEventListener( 'load', function () {
 			fraction: 'ally',
 			hpInitial: 1000,
 			x: canvas.rect.width / 2,
-			y: canvas.rect.height / 2
+			y: canvas.rect.height,
+			d: new Vector({ x: 0, y: -1 }),
+			v: new Vector({ x: 0, y: -1000 })
 		});
 
 		canvas.add( hero );
