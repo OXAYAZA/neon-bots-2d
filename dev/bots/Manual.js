@@ -33,6 +33,24 @@ class Simple {
 		if ( window.keys[ 'Space' ] ) {
 			this.body.shot();
 		}
+
+		if ( window.directionControllerOffset ) {
+			if ( window.directionControllerOffset.x < -.5 ) {
+				this.body.rotateLeft();
+			}
+
+			if ( window.directionControllerOffset.x > .5 ) {
+				this.body.rotateRight();
+			}
+
+			if ( window.directionControllerOffset.y < -.5 ) {
+				this.body.moveForward();
+			}
+
+			if ( window.directionControllerOffset.y > .5 ) {
+				this.body.moveBackward();
+			}
+		}
 	}
 
 	info () {

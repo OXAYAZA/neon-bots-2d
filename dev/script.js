@@ -16,7 +16,7 @@ function debug ( data ) {
 }
 
 // Main
-window.addEventListener( 'load', function () {
+window.addEventListener( 'DOMContentLoaded', function () {
 	let
 		btnPlay = document.querySelector( '#play' ),
 		btnPause = document.querySelector( '#pause' ),
@@ -33,7 +33,7 @@ window.addEventListener( 'load', function () {
 		enemies = window.enemies = {},
 		allies = window.allies = {};
 
-	new TouchController( document.querySelector( '#direction-control' ) );
+	new TouchController( 'directionController', document.querySelector( '#direction-control' ) );
 
 	window.spawnHero = function spawnHero () {
 		hero = window.hero = new Unit({
@@ -44,7 +44,7 @@ window.addEventListener( 'load', function () {
 			x: canvas.rect.width / 2,
 			y: canvas.rect.height,
 			d: new Vector({ x: 0, y: -1 }),
-			v: new Vector({ x: 0, y: -1000 })
+			v: new Vector({ x: 0, y: -canvas.rect.height / 2 })
 		});
 
 		canvas.add( hero );
@@ -61,6 +61,7 @@ window.addEventListener( 'load', function () {
 				x:          Math.random() * canvas.rect.width,
 				y:          canvas.rect.height,
 				d:          (new Vector( { x: 0, y: -1 } )),
+				v:          (new Vector( { x: 0, y: -500 * Math.random() } )),
 				onDead:     function () {
 					delete allies[ this.id ];
 				}
@@ -82,6 +83,7 @@ window.addEventListener( 'load', function () {
 				x:        Math.random() * canvas.rect.width,
 				y:        0,
 				d:        (new Vector( { x: 0, y: 1 } )),
+				v:        (new Vector( { x: 0, y: 500 * Math.random() } )),
 				onDead:   function () {
 					delete enemies[ this.id ];
 				}
@@ -115,6 +117,13 @@ window.addEventListener( 'load', function () {
 		window.keys[ event.code ] = false;
 	});
 
+	document.addEventListener( 'directionController:offset', function ( event ) {
+		window.directionControllerOffset = {
+			x: event.x,
+			y: event.y
+		};
+	});
+
 	btnPlay.addEventListener( 'click', function () {
 		if ( canvas.state !== 'play' ) {
 			canvas.state = 'play';
@@ -143,6 +152,7 @@ window.addEventListener( 'load', function () {
 			lastTime: canvas.lastTime,
 			deltaTime: canvas.deltaTime,
 			keys: window.keys,
+			dco: window.directionControllerOffset,
 			allies: Object.keys( allies ).length,
 			enemies: Object.keys( enemies ).length,
 			hero: hero.info()
