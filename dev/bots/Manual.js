@@ -34,22 +34,24 @@ class Simple {
 			this.body.shot();
 		}
 
-		if ( window.directionControllerOffset ) {
-			if ( window.directionControllerOffset.x < -.5 ) {
-				this.body.rotateLeft();
-			}
+		if ( window.directionControllerOffset.x < -.5 ) {
+			this.body.rotateLeft();
+		}
 
-			if ( window.directionControllerOffset.x > .5 ) {
-				this.body.rotateRight();
-			}
+		if ( window.directionControllerOffset.x > .5 ) {
+			this.body.rotateRight();
+		}
 
-			if ( window.directionControllerOffset.y < -.5 ) {
-				this.body.moveForward();
-			}
+		if ( window.directionControllerOffset.y < -.5 ) {
+			this.body.moveForward();
+		}
 
-			if ( window.directionControllerOffset.y > .5 ) {
-				this.body.moveBackward();
-			}
+		if ( window.directionControllerOffset.y > .5 ) {
+			this.body.moveBackward();
+		}
+
+		if ( window.touchButtons[ 'shotButton' ] ) {
+			this.body.shot();
 		}
 	}
 

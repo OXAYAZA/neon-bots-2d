@@ -1,6 +1,7 @@
 import Canvas from './util/Canvas.js';
 import Vector from './util/Vector.js';
 import TouchController from './util/TouchController.js';
+import TouchButton from './util/TouchButton.js';
 
 import Particle from './objects/Particle.js';
 import Unit from './objects/Unit.js';
@@ -20,10 +21,17 @@ window.addEventListener( 'DOMContentLoaded', function () {
 	let
 		btnPlay = document.querySelector( '#play' ),
 		btnPause = document.querySelector( '#pause' ),
+		btnTouch = document.querySelector( '#touch' ),
 		btnTick = document.querySelector( '#tick' ),
+		btnFs = document.querySelector( '#fullscreen' ),
 		canvas = window.canvas = new Canvas({
 			middle: function () {
 				if ( window.keys && window.keys[ 'KeyR' ] ) {
+					if ( window.hero && window.hero.alive ) window.hero.die();
+					window.spawnHero();
+				}
+
+				if ( window.touchButtons && window.touchButtons[ 'respawnButton' ] ) {
 					if ( window.hero && window.hero.alive ) window.hero.die();
 					window.spawnHero();
 				}
@@ -34,6 +42,8 @@ window.addEventListener( 'DOMContentLoaded', function () {
 		allies = window.allies = {};
 
 	new TouchController( 'directionController', document.querySelector( '#direction-control' ) );
+	new TouchButton( 'shotButton', document.querySelector( '#shot-button' ) );
+	new TouchButton( 'respawnButton', document.querySelector( '#respawn-button' ) );
 
 	window.spawnHero = function spawnHero () {
 		hero = window.hero = new Unit({
@@ -108,6 +118,8 @@ window.addEventListener( 'DOMContentLoaded', function () {
 	}
 
 	window.keys = {};
+	window.touchButtons = {};
+	window.directionControllerOffset = {};
 
 	document.addEventListener( 'keydown', function ( event ) {
 		window.keys[ event.code ] = true;
@@ -122,6 +134,14 @@ window.addEventListener( 'DOMContentLoaded', function () {
 			x: event.x,
 			y: event.y
 		};
+	});
+
+	document.addEventListener( 'shotButton:state', function ( event ) {
+		window.touchButtons[ 'shotButton' ] = event.state;
+	});
+
+	document.addEventListener( 'respawnButton:state', function ( event ) {
+		window.touchButtons[ 'respawnButton' ] = event.state;
 	});
 
 	btnPlay.addEventListener( 'click', function () {
@@ -139,6 +159,18 @@ window.addEventListener( 'DOMContentLoaded', function () {
 		canvas.render();
 	});
 
+	btnTouch.addEventListener( 'click', function () {
+		document.querySelector( '.touch-layer' ).classList.toggle( 'active' );
+	});
+
+	btnFs.addEventListener( 'click', function () {
+		if ( document.fullscreenElement ) {
+			document.exitFullscreen();
+		} else {
+			document.querySelector( '.page' ).requestFullscreen();
+		}
+	});
+
 	spawnHero();
 	setInterval( spawnEnemy, 1000 );
 	setInterval( spawnAlly, 5000 );
@@ -152,6 +184,7 @@ window.addEventListener( 'DOMContentLoaded', function () {
 			lastTime: canvas.lastTime,
 			deltaTime: canvas.deltaTime,
 			keys: window.keys,
+			touch: window.touchButtons,
 			dco: window.directionControllerOffset,
 			allies: Object.keys( allies ).length,
 			enemies: Object.keys( enemies ).length,

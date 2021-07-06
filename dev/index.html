@@ -3,6 +3,7 @@
 <html lang="en">
 	<head>
 		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
 		<title>Canvas</title>
 		<link rel="stylesheet" href="style.css">
 		<script type="module" src='script.js'></script>
@@ -18,11 +19,18 @@
 				<button class="button" id="play">Play</button>
 				<button class="button" id="pause">Pause</button>
 				<button class="button" id="tick">Tick</button>
+				<button class="button" id="touch">Touch</button>
+				<button class="button" id="fullscreen">Fullscreen</button>
 			</div>
 
-			<div class="direction-control" id="direction-control">
-				<div class="direction-control-pointer"></div>
-				<pre class="direction-control-info"></pre>
+			<div class="touch-layer">
+				<div class="direction-control" id="direction-control">
+					<div class="direction-control-pointer"></div>
+					<pre class="direction-control-info"></pre>
+				</div>
+
+				<div class="touch-button touch-button-1" id="shot-button"></div>
+				<div class="touch-button touch-button-2" id="respawn-button"></div>
 			</div>
 		</main>
 	</body>

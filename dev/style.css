@@ -28,14 +28,24 @@ html {
   top: 0;
   left: 0;
   padding: 5px;
-  color: white;
+  color: rgba( 255, 255, 255, .5 );
   user-select: none;
 }
 
 .controls {
   position: absolute;
-  bottom: 10px;
+  top: 10px;
   right: 10px;
+}
+
+.touch-layer {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.touch-layer.active {
+  visibility: visible;
+  pointer-events: auto;
 }
 
 .direction-control {
@@ -89,4 +99,24 @@ html {
   top: 50%;
   transform: translate( -50%, -50% );
   background: rgba( 0,0,0, .3 );
+}
+
+.touch-button {
+  position: fixed;
+  background: rgba( 255, 255, 255, .3 );
+  border-radius: 50%;
+}
+
+.touch-button-1 {
+  bottom: 20px;
+  right: 20px;
+  width: 100px;
+  height: 100px;
+}
+
+.touch-button-2 {
+  bottom: 140px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
 }

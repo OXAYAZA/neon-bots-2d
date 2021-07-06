@@ -1,11 +1,11 @@
 class TouchController {
+	id = null;
+	debug = false;
 	areaEl = null;
 	pointerEl = null;
 	infoEl = null;
-
 	pointerSelector = '.direction-control-pointer';
 	infoSelector = '.direction-control-info';
-
 	rect = {
 		x: 0,
 		y: 0,
@@ -78,10 +78,12 @@ class TouchController {
 	}
 
 	info () {
-		this.infoEl.innerText = JSON.stringify({
-			point: this.point,
-			offset: this.offset
-		}, null, 2);
+		if ( this.debug ) {
+			this.infoEl.innerText = JSON.stringify({
+				point: this.point,
+				offset: this.offset
+			}, null, 2);
+		}
 	}
 }
 
