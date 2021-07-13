@@ -3,6 +3,7 @@ import Unit from './Unit.js';
 
 class Dummy extends Unit {
 	mass = 200;
+	hpInitial = 10;
 	reloadTime = .4;
 	figureInitial = [
 		{ x: 20, y: -3 },
@@ -20,6 +21,7 @@ class Dummy extends Unit {
 	constructor ( props ) {
 		super( props );
 		merge( this, props );
+		this.hp = this.hpInitial;
 	}
 }
 

@@ -1,4 +1,4 @@
-class Simple {
+class ControlType1 {
 	body = null;
 
 	constructor ( body ) {
@@ -60,4 +60,4 @@ class Simple {
 	}
 }
 
-export default Simple;
+export default ControlType1;

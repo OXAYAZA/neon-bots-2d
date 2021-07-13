@@ -7,7 +7,7 @@ import Particle from './objects/Particle.js';
 import Unit from './objects/Unit.js';
 import Dummy from './objects/Dummy.js';
 import Simple from './bots/Simple.js';
-import Manual from './bots/Manual.js';
+import ControlType2 from './bots/ControlType2.js';
 
 window.Vector = Vector;
 
@@ -48,7 +48,7 @@ window.addEventListener( 'DOMContentLoaded', function () {
 	window.spawnHero = function spawnHero () {
 		hero = window.hero = new Unit({
 			canvas: canvas,
-			mind: Manual,
+			mind: ControlType2,
 			fraction: 'ally',
 			hpInitial: 1000,
 			x: canvas.rect.width / 2,
@@ -118,8 +118,10 @@ window.addEventListener( 'DOMContentLoaded', function () {
 	}
 
 	window.keys = {};
+	window.mousepos = {};
 	window.touchButtons = {};
 	window.directionControllerOffset = {};
+	window.gamepad = null;
 
 	document.addEventListener( 'keydown', function ( event ) {
 		window.keys[ event.code ] = true;
@@ -142,6 +144,18 @@ window.addEventListener( 'DOMContentLoaded', function () {
 
 	document.addEventListener( 'respawnButton:state', function ( event ) {
 		window.touchButtons[ 'respawnButton' ] = event.state;
+	});
+
+	document.addEventListener( 'mousemove', function ( event ) {
+		window.mousepos = {
+			x: event.clientX,
+			y: event.clientY
+		};
+	});
+
+	window.addEventListener( 'gamepadconnected', function ( event ) {
+		console.log( 'gamepadconnected', event );
+		window.gamepad = event.gamepad;
 	});
 
 	btnPlay.addEventListener( 'click', function () {
@@ -184,8 +198,10 @@ window.addEventListener( 'DOMContentLoaded', function () {
 			lastTime: canvas.lastTime,
 			deltaTime: canvas.deltaTime,
 			keys: window.keys,
+			mousepos: window.mousepos,
 			touch: window.touchButtons,
 			dco: window.directionControllerOffset,
+			gamepad: window.gamepad && window.gamepad.id,
 			allies: Object.keys( allies ).length,
 			enemies: Object.keys( enemies ).length,
 			hero: hero.info()
