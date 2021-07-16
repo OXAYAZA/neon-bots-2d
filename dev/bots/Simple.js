@@ -19,7 +19,7 @@ class Simple {
 			let target = window.canvas.unitLayer[ item ];
 			let distance = Math.sqrt( Math.pow( target.x - this.body.x, 2 ) + Math.pow( target.y - this.body.y, 2 ) );
 
-			if ( this.body !== target && this.body.fraction !== target.fraction && target.alive && distance < this.distance ) {
+			if ( this.body !== target && target.fraction && this.body.fraction !== target.fraction && target.alive && distance < this.distance ) {
 				this.distance = distance;
 				this.target = target;
 			}

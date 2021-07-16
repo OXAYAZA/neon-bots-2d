@@ -6,7 +6,6 @@ import Bullet from "./Bullet.js";
 
 class Unit extends Obj {
   type = 'Unit';
-  // color = 'hsl( 50, 100%, 50% )';
   color = 'rgb( 0, 255, 100 )';
   collide = true;
   alive = true;
@@ -36,14 +35,11 @@ class Unit extends Obj {
     this.hp = this.hpInitial;
   }
 
-  // updateColor () {
-  //   this.color = `hsl( ${ 100 / this.hpInitial * this.hp }, 100%, 50% )`;
-  // }
-
   explode () {
     for ( let i = 0; i < this.mass; i++ ) {
       this.canvas.add( new Particle({
         canvas: this.canvas,
+        color: this.color,
         x: this.x,
         y: this.y,
         d: new Vector({ x: 0, y: 1 }).rotateD( Math.random() * 360 ),
@@ -57,6 +53,7 @@ class Unit extends Obj {
     if ( this.v.length() > 2 ) {
       this.canvas.add( new Particle({
         canvas: this.canvas,
+        color: this.color,
         x: this.x,
         y: this.y,
         d: ( new Vector( this.d ) ).rotateD( Math.random() * 360 ),
@@ -122,6 +119,7 @@ class Unit extends Obj {
         this.canvas.add( new Bullet({
           canvas: this.canvas,
           friction: 0,
+          color: this.color,
           x: point.x,
           y: point.y,
           d: ( new Vector( this.d ) ).rotate( point.a ),
@@ -150,7 +148,6 @@ class Unit extends Obj {
     this.applyPosition();
     this.updateSlots();
     this.calcSegments();
-    // this.updateColor();
     this.moveEffect();
 
     if ( this.mind && this.mind.prototype ) {
@@ -168,6 +165,7 @@ class Unit extends Obj {
     return {
       id: this.id,
       color: this.color,
+      fraction: this.fraction,
       alive: this.alive,
       reloading: this.reloading,
       x: this.x,
@@ -176,8 +174,12 @@ class Unit extends Obj {
       d: this.d,
       v: this.v,
       vl: this.v.length(),
-      hp: this.hp,
-      mind: this.mind && this.mind.info()
+      hp: (() => {
+        if ( this.hp / this.hpInitial < .1 ) return `<span class='text-red'>${this.hp}</span>`;
+        else if ( this.hp / this.hpInitial < .2 ) return `<span class='text-yellow'>${this.hp}</span>`;
+        return `<span class='text-green'>${this.hp}</span>`;
+      })(),
+      mind: this.mind && hero.mind.constructor.name
     };
   }
 }

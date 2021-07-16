@@ -32,6 +32,18 @@ html {
   user-select: none;
 }
 
+.text-green {
+  color: lightgreen;
+}
+
+.text-yellow {
+  color: yellow;
+}
+
+.text-red {
+  color: red;
+}
+
 .controls {
   position: absolute;
   top: 10px;

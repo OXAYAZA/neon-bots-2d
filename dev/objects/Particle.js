@@ -3,9 +3,7 @@ import Obj from './Obj.js';
 
 class Particle extends Obj {
   type = 'Particle';
-  hue = 24;
-  saturation = 100;
-  lightness = 80;
+  color = 'rgb(255, 255, 255)';
   sizeInitial = 2;
   hpInitial = .3;
   hp = null;
@@ -14,7 +12,6 @@ class Particle extends Obj {
     super( props );
     merge( this, props );
 
-    this.color = `hsl(${this.hue}, ${this.saturation}%, ${this.lightness}%)`;
     this.hp = this.hpInitial;
     this.figureInitial = this.figureInitial.map( ( point ) => {
       return {
@@ -22,11 +19,6 @@ class Particle extends Obj {
         y: point.y * this.sizeInitial
       };
     });
-  }
-
-  updateColor () {
-    this.lightness = this.lightness <= 50 ? this.lightness : this.lightness - 1;
-    this.color = `hsla(${this.hue}, ${this.saturation}%, ${this.lightness}%)`;
   }
 
   resizeFigure ( reTransform ) {
@@ -50,7 +42,6 @@ class Particle extends Obj {
     this.rotateFigure( true );
     this.applyPosition();
     this.calcSegments();
-    this.updateColor();
 
     if ( this.hp <= 0 ) this.die();
   }

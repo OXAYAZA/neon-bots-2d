@@ -13,7 +13,7 @@ window.Vector = Vector;
 
 // Debug
 function debug ( data ) {
-	document.getElementById( 'debug' ).innerText = JSON.stringify( data, null, 2 );
+	document.getElementById( 'debug' ).innerHTML = JSON.stringify( data, null, 2 );
 }
 
 // Main
@@ -67,7 +67,7 @@ window.addEventListener( 'DOMContentLoaded', function () {
 				canvas:     canvas,
 				mind:       Simple,
 				fraction:   'ally',
-				color:      'rgb(0, 100, 255)',
+				color:      'rgb(255,230,0)',
 				x:          Math.random() * canvas.rect.width,
 				y:          canvas.rect.height,
 				d:          (new Vector( { x: 0, y: -1 } )),
