@@ -13,6 +13,7 @@ function Canvas ( props ) {
 	this.node.canvas = this;
 	this.deltaTime = 0;
 	this.lastTime = 0;
+	this.grid = [];
 
 	merge( this, props );
 
@@ -84,6 +85,8 @@ Canvas.prototype.render = function ( currentTime = 0 ) {
 		}
 	}
 
+	this.updGrid();
+
 	if ( this.middle instanceof Function ) this.middle.call( this );
 
 	for ( let id in this.objects ) {
@@ -100,6 +103,22 @@ Canvas.prototype.resize = function () {
 	this.node.width = this.rect.width;
 	this.node.height = this.rect.height;
 };
+
+Canvas.prototype.updGrid = function () {
+	this.ctx.fillStyle = 'rgba(0, 0, 0, .1)';
+
+	this.grid = new Array( Math.round( this.rect.width / 10 ) );
+
+	for ( let x = 0; x < this.grid.length; x++ ) {
+		this.grid[x] = new Array( Math.round( this.rect.height / 10 ) );
+
+		for ( let y = 0; y < this.grid[x].length; y++ ) {
+			this.ctx.rect( x*10-1, y*10-1, 3, 3 );
+		}
+	}
+
+	this.ctx.fill();
+}
 
 Canvas.prototype.add = function ( obj ) {
 	obj.id = Math.random().toString( 36 ).substr( 2, 9 );

@@ -31,6 +31,7 @@ class Bullet extends Obj {
     for ( let i = 0; i < 10; i++ ) {
       this.canvas.add( new Particle({
         canvas: this.canvas,
+        color: this.color,
         x: this.x,
         y: this.y,
         d: ( new Vector( this.d ) ).rotateD( 180 ),

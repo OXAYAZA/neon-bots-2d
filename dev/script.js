@@ -1,15 +1,14 @@
+import initControl from './util/initControl.js';
 import Canvas from './util/Canvas.js';
 import Vector from './util/Vector.js';
-import TouchController from './util/TouchController.js';
-import TouchButton from './util/TouchButton.js';
 
 import Particle from './objects/Particle.js';
 import Unit from './objects/Unit.js';
 import Dummy from './objects/Dummy.js';
 import Simple from './bots/Simple.js';
+import PathFinder from './bots/PathFinder.js';
 import ControlType2 from './bots/ControlType2.js';
 
-window.Vector = Vector;
 
 // Debug
 function debug ( data ) {
@@ -19,38 +18,19 @@ function debug ( data ) {
 // Main
 window.addEventListener( 'DOMContentLoaded', function () {
 	let
-		btnPlay = document.querySelector( '#play' ),
-		btnPause = document.querySelector( '#pause' ),
-		btnTouch = document.querySelector( '#touch' ),
-		btnTick = document.querySelector( '#tick' ),
-		btnFs = document.querySelector( '#fullscreen' ),
-		canvas = window.canvas = new Canvas({
-			middle: function () {
-				if ( window.keys && window.keys[ 'KeyR' ] ) {
-					if ( window.hero && window.hero.alive ) window.hero.die();
-					window.spawnHero();
-				}
-
-				if ( window.touchButtons && window.touchButtons[ 'respawnButton' ] ) {
-					if ( window.hero && window.hero.alive ) window.hero.die();
-					window.spawnHero();
-				}
-			}
-		}),
+		canvas,
 		hero = null,
 		enemies = window.enemies = {},
 		allies = window.allies = {};
 
-	new TouchController( 'directionController', document.querySelector( '#direction-control' ) );
-	new TouchButton( 'shotButton', document.querySelector( '#shot-button' ) );
-	new TouchButton( 'respawnButton', document.querySelector( '#respawn-button' ) );
+	initControl();
 
 	window.spawnHero = function spawnHero () {
 		hero = window.hero = new Unit({
 			canvas: canvas,
 			mind: ControlType2,
 			fraction: 'ally',
-			hpInitial: 1000,
+			hpInitial: 10000,
 			x: canvas.rect.width / 2,
 			y: canvas.rect.height,
 			d: new Vector({ x: 0, y: -1 }),
@@ -84,10 +64,10 @@ window.addEventListener( 'DOMContentLoaded', function () {
 	}
 
 	function spawnEnemy () {
-		if ( Object.keys( enemies ).length < 10 ) {
+		if ( Object.keys( enemies ).length < 1 ) {
 			let unit = new Dummy( {
 				canvas:   canvas,
-				mind:     Simple,
+				mind:     PathFinder,
 				fraction: 'enemy',
 				color:    'rgb(255, 0, 100)',
 				x:        Math.random() * canvas.rect.width,
@@ -117,94 +97,38 @@ window.addEventListener( 'DOMContentLoaded', function () {
 		}));
 	}
 
-	window.keys = {};
-	window.mousepos = {};
-	window.touchButtons = {};
-	window.directionControllerOffset = {};
-	window.gamepad = null;
+	canvas = window.canvas = new Canvas({
+		middle: function () {
+			debug( {
+				objects: window.canvas && Object.keys( window.canvas.objects ).length,
+				collisionLayer: window.canvas && Object.keys( window.canvas.collisionLayer ).length,
+				unitLayer: window.canvas && Object.keys( window.canvas.unitLayer ).length,
+				lastTime: window.canvas && window.canvas.lastTime,
+				deltaTime: window.canvas && window.canvas.deltaTime,
+				keys: window.keys,
+				mousepos: window.mousepos,
+				touch: window.touchButtons,
+				dco: window.directionControllerOffset,
+				gamepad: window.gamepad && window.gamepad.id,
+				allies: Object.keys( allies ).length,
+				enemies: Object.keys( enemies ).length,
+				hero: window.hero && window.hero.info()
+			});
 
-	document.addEventListener( 'keydown', function ( event ) {
-		window.keys[ event.code ] = true;
-	});
+			if ( window.keys && window.keys[ 'KeyR' ] ) {
+				if ( window.hero && window.hero.alive ) window.hero.die();
+				window.spawnHero();
+			}
 
-	document.addEventListener( 'keyup', function ( event ) {
-		window.keys[ event.code ] = false;
-	});
-
-	document.addEventListener( 'directionController:offset', function ( event ) {
-		window.directionControllerOffset = {
-			x: event.x,
-			y: event.y
-		};
-	});
-
-	document.addEventListener( 'shotButton:state', function ( event ) {
-		window.touchButtons[ 'shotButton' ] = event.state;
-	});
-
-	document.addEventListener( 'respawnButton:state', function ( event ) {
-		window.touchButtons[ 'respawnButton' ] = event.state;
-	});
-
-	document.addEventListener( 'mousemove', function ( event ) {
-		window.mousepos = {
-			x: event.clientX,
-			y: event.clientY
-		};
-	});
-
-	window.addEventListener( 'gamepadconnected', function ( event ) {
-		console.log( 'gamepadconnected', event );
-		window.gamepad = event.gamepad;
-	});
-
-	btnPlay.addEventListener( 'click', function () {
-		if ( canvas.state !== 'play' ) {
-			canvas.state = 'play';
-			canvas.render();
-		}
-	});
-
-	btnPause.addEventListener( 'click', function () {
-		canvas.state = 'pause';
-	});
-
-	btnTick.addEventListener( 'click', function () {
-		canvas.render();
-	});
-
-	btnTouch.addEventListener( 'click', function () {
-		document.querySelector( '.touch-layer' ).classList.toggle( 'active' );
-	});
-
-	btnFs.addEventListener( 'click', function () {
-		if ( document.fullscreenElement ) {
-			document.exitFullscreen();
-		} else {
-			document.querySelector( '.page' ).requestFullscreen();
+			if ( window.touchButtons && window.touchButtons[ 'respawnButton' ] ) {
+				if ( window.hero && window.hero.alive ) window.hero.die();
+				window.spawnHero();
+			}
 		}
 	});
 
 	spawnHero();
 	setInterval( spawnEnemy, 1000 );
-	setInterval( spawnAlly, 5000 );
+	// setInterval( spawnAlly, 5000 );
 	setInterval( spawnParticle, 50 );
-
-	setInterval( () => {
-		debug( {
-			objects: Object.keys( canvas.objects ).length,
-			collisionLayer: Object.keys( canvas.collisionLayer ).length,
-			unitLayer: Object.keys( canvas.unitLayer ).length,
-			lastTime: canvas.lastTime,
-			deltaTime: canvas.deltaTime,
-			keys: window.keys,
-			mousepos: window.mousepos,
-			touch: window.touchButtons,
-			dco: window.directionControllerOffset,
-			gamepad: window.gamepad && window.gamepad.id,
-			allies: Object.keys( allies ).length,
-			enemies: Object.keys( enemies ).length,
-			hero: hero.info()
-		});
-	}, 50 );
 });
