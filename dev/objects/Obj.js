@@ -1,4 +1,5 @@
 import merge from '../util/merge.js';
+import figuresIntersect from '../util/figuresIntersect.js';
 import Vector from "../util/Vector.js";
 
 class Obj {
@@ -7,8 +8,12 @@ class Obj {
   delta = 0;                         // Коррекция по времени
   type = 'Object';                   // Тип объекта
   collide = false;                   // Включение проверки столкновений для объекта
-  color = 'hsl( 0, 100%, 100% )';    // Цвет заливки объекта
+  color = 'rgb( 255, 255, 255 )';    // Цвет заливки объекта
   friction = .05;                    // Торможение объекта при движении
+  gridPos = {                        // Позиция в сетке
+    x: 0,
+    y: 0,
+  };
 
   x = 0;                             // Координата X
   y = 0;                             // Координата Y
@@ -36,7 +41,7 @@ class Obj {
       throw new Error( 'canvas is required property' );
     }
 
-    // TODO Добавить проверки свойств
+    // TODO Добавить проверки параметров
 
     // Установка новых свойств
     merge( this, props );
@@ -83,6 +88,51 @@ class Obj {
     this.a = this.d.angle();
   }
 
+  updGrid () {
+    let
+      minX = null,
+      maxX = null,
+      minY = null,
+      maxY = null;
+
+    this.figureFinal.forEach( ( point ) => {
+      if ( typeof( minX ) !== 'number' || point.x < minX ) minX = point.x;
+      if ( typeof( maxX ) !== 'number' || point.x > maxX ) maxX = point.x;
+      if ( typeof( minY ) !== 'number'  || point.y < minY ) minY = point.y;
+      if ( typeof( maxY ) !== 'number'  || point.y > maxY ) maxY = point.y;
+    });
+
+    minX = Math.round( minX / 10 );
+    maxX = Math.round( maxX / 10 );
+    minY = Math.round( minY / 10 );
+    maxY = Math.round( maxY / 10 );
+
+    // TODO Должно быть исправлено ограничением игровой области
+    try {
+      for ( let x = minX; x <= maxX; x++ ) {
+        for ( let y = minY; y <= maxY; y++ ) {
+          let segments = [
+            [{ x: x * 10 - 7 , y: y * 10 - 7 }, { x: x * 10 + 7 , y: y * 10 - 7 }],
+            [{ x: x * 10 + 7 , y: y * 10 - 7 }, { x: x * 10 + 7 , y: y * 10 + 7 }],
+            [{ x: x * 10 + 7 , y: y * 10 + 7 }, { x: x * 10 - 7 , y: y * 10 + 7 }],
+            [{ x: x * 10 - 7 , y: y * 10 + 7 }, { x: x * 10 - 7 , y: y * 10 - 7 }]
+          ];
+
+          if ( figuresIntersect( segments, this.figureSegments ) ) {
+            this.canvas.grid[ x ][ y ] = this;
+          }
+        }
+      }
+
+      this.gridPos.x = Math.round( this.x / 10 );
+      this.gridPos.y = Math.round( this.y / 10 );
+    } catch ( error ) {}
+  }
+
+  collision ( obj ) {
+
+  }
+
   live ( delta = 0 ) {
     this.delta = delta;
 
@@ -91,6 +141,7 @@ class Obj {
     this.rotateFigure();
     this.applyPosition();
     this.calcSegments();
+    this.updGrid();
   }
 
   die () {
@@ -116,6 +167,7 @@ class Obj {
       id: this.id,
       delta: this.delta,
       type: this.type,
+      gridPos: this.gridPos,
       collide: this.collide,
       color: this.color,
       x: this.x,

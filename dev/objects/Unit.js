@@ -12,7 +12,6 @@ class Unit extends Obj {
   mind;
   fraction = null;
   hpInitial = 100;
-  pos = [ 0, 0 ];
   figureInitial = [
     { x: 0,  y: 0 },
     { x: -5,  y: 5 },
@@ -104,11 +103,6 @@ class Unit extends Obj {
     });
   }
 
-  updPos () {
-    this.pos[ 0 ] = Math.round( this.x / 10 );
-    this.pos[ 1 ] = Math.round( this.y / 10 );
-  }
-
   coolDown () {
     if ( this.reloading ) {
       if ( this.reloading > 0 ) {
@@ -154,7 +148,7 @@ class Unit extends Obj {
     this.applyPosition();
     this.updateSlots();
     this.calcSegments();
-    this.updPos();
+    this.updGrid();
     this.moveEffect();
 
     if ( this.mind && this.mind.prototype ) {
@@ -166,26 +160,6 @@ class Unit extends Obj {
     }
 
     if ( this.hp <= 0 ) this.die();
-  }
-
-  render () {
-    this.canvas.ctx.fillStyle = this.color;
-    this.canvas.ctx.beginPath();
-
-    this.figureFinal.forEach( ( point, index ) => {
-      if ( index ) this.canvas.ctx.lineTo( point.x, point.y );
-      else this.canvas.ctx.moveTo( point.x, point.y );
-    });
-
-    this.canvas.ctx.closePath();
-    this.canvas.ctx.fill();
-
-    this.canvas.ctx.globalAlpha = .3;
-    this.canvas.ctx.beginPath();
-    this.canvas.ctx.rect( this.pos[0]*10-10, this.pos[1]*10-10, 21, 21 );
-    this.canvas.ctx.closePath();
-    this.canvas.ctx.fill();
-    this.canvas.ctx.globalAlpha = 1;
   }
 
   info () {
@@ -200,7 +174,7 @@ class Unit extends Obj {
       a: this.a,
       d: this.d,
       v: this.v,
-      pos: this.pos,
+      gridPos: this.gridPos,
       vl: this.v.length(),
       hp: (() => {
         if ( this.hp / this.hpInitial < .1 ) return `<span class='text-red'>${this.hp}</span>`;

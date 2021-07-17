@@ -73,7 +73,7 @@ class PathFinder {
 			this.calculate();
 			this.rotate();
 			this.move();
-			this.attack();
+			// this.attack();
 		}
 	}
 

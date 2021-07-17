@@ -1,4 +1,5 @@
-import merge from './merge.js'
+import merge from './merge.js';
+import figuresIntersect from './figuresIntersect.js';
 
 // Canvas prototype
 function Canvas ( props ) {
@@ -22,52 +23,12 @@ function Canvas ( props ) {
 	this.render();
 }
 
-Canvas.checkSegmentsIntersection = function ( x1, y1, x2, y2, x3, y3, x4, y4 ) {
-	let a_dx = x2 - x1;
-	let a_dy = y2 - y1;
-	let b_dx = x4 - x3;
-	let b_dy = y4 - y3;
-	let s = (-a_dy * (x1 - x3) + a_dx * (y1 - y3)) / (-b_dx * a_dy + a_dx * b_dy);
-	let t = (+b_dx * (y1 - y3) - b_dy * (x1 - x3)) / (-b_dx * a_dy + a_dx * b_dy);
-	return (s >= 0 && s <= 1 && t >= 0 && t <= 1) ? [x1 + t * a_dx, y1 + t * a_dy] : false;
-};
-
-Canvas.checkIntersection = function ( obj1, obj2 ) {
-	let intersect = false;
-
-	outer: for ( let i1 = 0; i1 < obj1.figureSegments.length; i1++ ) {
-		for ( let i2 = 0; i2 < obj2.figureSegments.length; i2++ ) {
-			let
-				segment1 = obj1.figureSegments[ i1 ],
-				segment2 = obj2.figureSegments[ i2 ],
-				tmp = Canvas.checkSegmentsIntersection(
-					segment1[0].x,
-					segment1[0].y,
-					segment1[1].x,
-					segment1[1].y,
-					segment2[0].x,
-					segment2[0].y,
-					segment2[1].x,
-					segment2[1].y
-				);
-
-			if ( tmp ) {
-				intersect = true;
-				break outer;
-			}
-		}
-	}
-
-	return intersect;
-};
-
 Canvas.prototype.render = function ( currentTime = 0 ) {
 	if ( this.state === 'play' ) {
 		requestAnimationFrame( this.render.bind( this ) );
 	}
 
 	this.deltaTime = currentTime - this.lastTime;
-
 	this.ctx.clearRect( 0, 0, this.rect.width, this.rect.height );
 
 	for ( let u1ID in this.collisionLayer ) {
@@ -78,16 +39,16 @@ Canvas.prototype.render = function ( currentTime = 0 ) {
 			let u2 = this.collisionLayer[ u2ID ];
 			if ( u1 === u2 || !u2.figureSegments ) continue;
 
-			if ( Canvas.checkIntersection( u1, u2 ) ) {
+			if ( figuresIntersect( u1.figureSegments, u2.figureSegments ) ) {
 				if ( u1.collide ) u1.collision( u2 );
 				if ( u2.collide ) u2.collision( u1 );
 			}
 		}
 	}
 
-	this.updGrid();
-
 	if ( this.middle instanceof Function ) this.middle.call( this );
+
+	this.resetGrid();
 
 	for ( let id in this.objects ) {
 		let obj = this.objects[ id ];
@@ -95,6 +56,7 @@ Canvas.prototype.render = function ( currentTime = 0 ) {
 		obj.render();
 	}
 
+	this.renderGrid();
 	this.lastTime = currentTime;
 };
 
@@ -104,20 +66,29 @@ Canvas.prototype.resize = function () {
 	this.node.height = this.rect.height;
 };
 
-Canvas.prototype.updGrid = function () {
-	this.ctx.fillStyle = 'rgba(0, 0, 0, .1)';
-
+Canvas.prototype.resetGrid = function () {
 	this.grid = new Array( Math.round( this.rect.width / 10 ) );
 
 	for ( let x = 0; x < this.grid.length; x++ ) {
 		this.grid[x] = new Array( Math.round( this.rect.height / 10 ) );
+	}
+}
 
+Canvas.prototype.renderGrid = function () {
+	for ( let x = 0; x < this.grid.length; x++ ) {
 		for ( let y = 0; y < this.grid[x].length; y++ ) {
-			this.ctx.rect( x*10-1, y*10-1, 3, 3 );
+			if ( this.grid[x][y] ) {
+				let obj = this.grid[x][y];
+				this.ctx.globalAlpha = .3;
+				this.ctx.strokeStyle = obj.color;
+				this.ctx.beginPath();
+				this.ctx.rect( x*10-4, y*10-4, 9, 9 );
+				this.ctx.closePath();
+				this.ctx.stroke();
+				this.ctx.globalAlpha = 1;
+			}
 		}
 	}
-
-	this.ctx.fill();
 }
 
 Canvas.prototype.add = function ( obj ) {

@@ -2,6 +2,7 @@ import initControl from './util/initControl.js';
 import Canvas from './util/Canvas.js';
 import Vector from './util/Vector.js';
 
+import Wall from './objects/Wall.js';
 import Particle from './objects/Particle.js';
 import Unit from './objects/Unit.js';
 import Dummy from './objects/Dummy.js';
@@ -34,7 +35,18 @@ window.addEventListener( 'DOMContentLoaded', function () {
 			x: canvas.rect.width / 2,
 			y: canvas.rect.height,
 			d: new Vector({ x: 0, y: -1 }),
-			v: new Vector({ x: 0, y: -canvas.rect.height / 2 })
+			v: new Vector({ x: 0, y: -canvas.rect.height / 2 }),
+			figureInitial: [
+				{ x: 0,  y: 0 },
+				{ x: -20,  y: 20 },
+				{ x: -8,  y: 20 },
+				{ x: 40, y: 0 },
+				{ x: -8,  y: -20 },
+				{ x: -20,  y: -20 }
+			],
+			bulletSlots: [
+				{ x: 45, y: 0, a: 0 }
+			]
 		});
 
 		canvas.add( hero );
@@ -64,13 +76,15 @@ window.addEventListener( 'DOMContentLoaded', function () {
 	}
 
 	function spawnEnemy () {
-		if ( Object.keys( enemies ).length < 1 ) {
+		// if ( Object.keys( enemies ).length < 10 ) {
+		if ( Object.keys( enemies ).length < 10 ) {
 			let unit = new Dummy( {
 				canvas:   canvas,
 				mind:     PathFinder,
 				fraction: 'enemy',
 				color:    'rgb(255, 0, 100)',
-				x:        Math.random() * canvas.rect.width,
+				// x:        Math.random() * canvas.rect.width,
+				x:        canvas.rect.width / 2,
 				y:        0,
 				d:        (new Vector( { x: 0, y: 1 } )),
 				v:        (new Vector( { x: 0, y: 500 * Math.random() } )),
@@ -94,6 +108,15 @@ window.addEventListener( 'DOMContentLoaded', function () {
 			d: new Vector({ x: 0, y: -1 }),
 			v: new Vector({ x: 0, y: 300 }),
 			hpInitial: Math.random() * 5
+		}));
+	}
+
+	function spawnWall () {
+		canvas.add( new Wall({
+			canvas: canvas,
+			friction: 0,
+			x: canvas.rect.width / 2,
+			y: canvas.rect.height / 2
 		}));
 	}
 
@@ -128,6 +151,7 @@ window.addEventListener( 'DOMContentLoaded', function () {
 	});
 
 	spawnHero();
+	spawnWall();
 	setInterval( spawnEnemy, 1000 );
 	// setInterval( spawnAlly, 5000 );
 	setInterval( spawnParticle, 50 );
