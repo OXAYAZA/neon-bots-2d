@@ -16,9 +16,9 @@ class Wall extends Obj {
 	}
 
 	collision ( obj ) {
-		if ( obj.type === 'Unit' ) {
-			obj.die();
-		}
+		// if ( obj.type === 'Unit' ) {
+		// 	obj.die();
+		// }
 	}
 }
 

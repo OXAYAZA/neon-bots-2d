@@ -10,6 +10,8 @@ class Obj {
   collide = false;                   // Включение проверки столкновений для объекта
   color = 'rgb( 255, 255, 255 )';    // Цвет заливки объекта
   friction = .05;                    // Торможение объекта при движении
+
+  gridArr = [];                      // Занимаемые ячейки сетки
   gridPos = {                        // Позиция в сетке
     x: 0,
     y: 0,
@@ -34,6 +36,7 @@ class Obj {
   figureSegments;                    // Отрезки фигуры, для определения пересечений
 
   onDead = null;                     // Посмертный колбек
+  onRender = null;                   // Колбек после отрисовки
 
   constructor ( props = {} ) {
     // Проверка параметров
@@ -89,6 +92,8 @@ class Obj {
   }
 
   updGrid () {
+    this.gridArr = [];
+
     let
       minX = null,
       maxX = null,
@@ -127,7 +132,9 @@ class Obj {
           }
 
           if ( objectsIntersect( tmpSquare, this ) ) {
-            this.canvas.grid[ x ][ y ] = this;
+            this.canvas.grid.nodes[y][x].walkable = false;
+            this.canvas.grid.nodes[y][x].obj = this;
+            this.gridArr.push({ x: x, y: y });
           }
         }
       }
@@ -168,6 +175,8 @@ class Obj {
 
     this.canvas.ctx.closePath();
     this.canvas.ctx.fill();
+
+    if ( this.onRender instanceof Function ) this.onRender.call( this );
   }
 
   info () {

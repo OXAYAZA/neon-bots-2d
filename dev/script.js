@@ -9,7 +9,6 @@ import Dummy from './objects/Dummy.js';
 import Simple from './bots/Simple.js';
 import PathFinder from './bots/PathFinder.js';
 import ControlType2 from './bots/ControlType2.js';
-import pointInPoly from './util/pointInPoly.js';
 
 
 // Debug
@@ -34,20 +33,9 @@ window.addEventListener( 'DOMContentLoaded', function () {
 			fraction: 'ally',
 			hpInitial: 10000,
 			x: canvas.rect.width / 2,
-			y: canvas.rect.height,
+			y: canvas.rect.height - 50,
 			d: new Vector({ x: 0, y: -1 }),
-			v: new Vector({ x: 0, y: -canvas.rect.height / 2 }),
-			figureInitial: [
-				{ x: 0,  y: 0 },
-				{ x: -40,  y: 40 },
-				{ x: -16,  y: 40 },
-				{ x: 80, y: 0 },
-				{ x: -16,  y: -40 },
-				{ x: -40,  y: -40 }
-			],
-			bulletSlots: [
-				{ x: 85, y: 0, a: 0 }
-			]
+			v: new Vector({ x: 0, y: -canvas.rect.height / 2 })
 		});
 
 		canvas.add( hero );
@@ -77,18 +65,16 @@ window.addEventListener( 'DOMContentLoaded', function () {
 	}
 
 	function spawnEnemy () {
-		// if ( Object.keys( enemies ).length < 10 ) {
-		if ( Object.keys( enemies ).length < 1 ) {
+		if ( Object.keys( enemies ).length < 10 ) {
 			let unit = new Dummy( {
 				canvas:   canvas,
 				mind:     PathFinder,
 				fraction: 'enemy',
 				color:    'rgb(255, 0, 100)',
-				// x:        Math.random() * canvas.rect.width,
-				x:        canvas.rect.width / 2,
-				y:        0,
+				x:        Math.random() * canvas.rect.width,
+				y:        50,
 				d:        (new Vector( { x: 0, y: 1 } )),
-				v:        (new Vector( { x: 0, y: 500 * Math.random() } )),
+				v:        (new Vector( { x: 0, y: 500 } )),
 				onDead:   function () {
 					delete enemies[ this.id ];
 				}
@@ -112,12 +98,12 @@ window.addEventListener( 'DOMContentLoaded', function () {
 		}));
 	}
 
-	function spawnWall () {
+	function spawnWall ( x, y ) {
 		canvas.add( new Wall({
 			canvas: canvas,
 			friction: 0,
-			x: canvas.rect.width / 2,
-			y: canvas.rect.height / 2
+			x: x,
+			y: y
 		}));
 	}
 
@@ -152,7 +138,11 @@ window.addEventListener( 'DOMContentLoaded', function () {
 	});
 
 	spawnHero();
-	spawnWall();
+	spawnWall( canvas.rect.width * .15, canvas.rect.height * .5 );
+	spawnWall( canvas.rect.width * .35, canvas.rect.height * .5 );
+	spawnWall( canvas.rect.width * .5, canvas.rect.height * .5 );
+	spawnWall( canvas.rect.width * .65, canvas.rect.height * .5 );
+	spawnWall( canvas.rect.width * .85, canvas.rect.height * .5 );
 	setInterval( spawnEnemy, 1000 );
 	// setInterval( spawnAlly, 5000 );
 	setInterval( spawnParticle, 50 );

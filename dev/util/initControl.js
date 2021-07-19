@@ -55,8 +55,9 @@ export default function initControl () {
 	if ( elBtnPlay ) {
 		elBtnPlay.addEventListener( 'click', function () {
 			if ( canvas.state !== 'play' ) {
+				canvas.lastTime = performance.now();
 				canvas.state = 'play';
-				canvas.render();
+				canvas.render( performance.now() );
 			}
 		});
 	}
@@ -69,7 +70,8 @@ export default function initControl () {
 
 	if ( elBtnTick ) {
 		elBtnTick.addEventListener( 'click', function () {
-			canvas.render();
+			canvas.lastTime = performance.now();
+			canvas.render( performance.now() + 20 );
 		});
 	}
 

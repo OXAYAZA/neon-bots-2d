@@ -1,5 +1,6 @@
 import merge from './merge.js';
 import objectsIntersect from './objectsIntersect.js';
+import Grid from '../pathfinding/Grid.js';
 
 // Canvas prototype
 function Canvas ( props ) {
@@ -14,19 +15,21 @@ function Canvas ( props ) {
 	this.node.canvas = this;
 	this.deltaTime = 0;
 	this.lastTime = 0;
-	this.grid = [];
+	this.grid = null;
 
 	merge( this, props );
 
 	this.resize();
 	window.addEventListener( 'resize', this.resize.bind( this ) );
-	this.render();
+	this.render( performance.now() );
 }
 
 Canvas.prototype.render = function ( currentTime = 0 ) {
 	if ( this.state === 'play' ) {
 		requestAnimationFrame( this.render.bind( this ) );
 	}
+
+	this.resetGrid();
 
 	this.deltaTime = currentTime - this.lastTime;
 	this.ctx.clearRect( 0, 0, this.rect.width, this.rect.height );
@@ -48,8 +51,6 @@ Canvas.prototype.render = function ( currentTime = 0 ) {
 
 	if ( this.middle instanceof Function ) this.middle.call( this );
 
-	this.resetGrid();
-
 	for ( let id in this.objects ) {
 		let obj = this.objects[ id ];
 		obj.live( this.deltaTime / 1000 );
@@ -67,18 +68,17 @@ Canvas.prototype.resize = function () {
 };
 
 Canvas.prototype.resetGrid = function () {
-	this.grid = new Array( Math.round( this.rect.width / 10 ) );
-
-	for ( let x = 0; x < this.grid.length; x++ ) {
-		this.grid[x] = new Array( Math.round( this.rect.height / 10 ) );
-	}
+	this.grid = new Grid(
+		Math.round( this.rect.width / 10 ),
+		Math.round( this.rect.height / 10 ),
+	);
 }
 
 Canvas.prototype.renderGrid = function () {
-	for ( let x = 0; x < this.grid.length; x++ ) {
-		for ( let y = 0; y < this.grid[x].length; y++ ) {
-			if ( this.grid[x][y] ) {
-				let obj = this.grid[x][y];
+	for ( let x = 0; x < this.grid.width; x++ ) {
+		for ( let y = 0; y < this.grid.height; y++ ) {
+			if ( !this.grid.nodes[y][x].walkable ) {
+				let obj = this.grid.nodes[y][x].obj;
 				this.ctx.globalAlpha = .3;
 				this.ctx.strokeStyle = obj.color;
 				this.ctx.beginPath();
