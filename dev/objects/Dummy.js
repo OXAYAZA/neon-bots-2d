@@ -5,6 +5,7 @@ class Dummy extends Unit {
 	mass = 200;
 	hpInitial = 10;
 	reloadTime = .4;
+	friction = .2;
 	figureInitial = [
 		{ x: 20, y: -3 },
 		{ x: 10,   y: -10 },

@@ -108,9 +108,9 @@ window.addEventListener( 'DOMContentLoaded', function () {
 		}));
 	}
 
-	canvas = window.canvas = new Canvas();
+	canvas = window.canvas = new Canvas({ node: document.querySelector( '#root' ) });
 
-	canvas.middle.push( function () {
+	canvas.onMiddle.push( function () {
 		debug( {
 			objects: window.canvas && Object.keys( window.canvas.objects ).length,
 			collisionLayer: window.canvas && Object.keys( window.canvas.collisionLayer ).length,
@@ -179,6 +179,6 @@ window.addEventListener( 'DOMContentLoaded', function () {
 
 	spawnHero();
 	setInterval( spawnEnemy, 1000 );
-	// setInterval( spawnAlly, 5000 );
+	setInterval( spawnAlly, 5000 );
 	setInterval( spawnParticle, 50 );
 });
