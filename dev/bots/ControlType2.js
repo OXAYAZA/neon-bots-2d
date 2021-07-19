@@ -13,9 +13,9 @@ class ControlType2 {
 	}
 
 	calculate () {
-		if ( window.mousepos.x && window.mousepos.y ) {
-			this.target.x = window.mousepos.x;
-			this.target.y = window.mousepos.y;
+		if ( window.mouse.x && window.mouse.y ) {
+			this.target.x = window.mouse.x;
+			this.target.y = window.mouse.y;
 
 			this.direction = new Vector({
 				x: this.target.x - this.body.x,

@@ -31,7 +31,7 @@ window.addEventListener( 'DOMContentLoaded', function () {
 			canvas: canvas,
 			mind: ControlType2,
 			fraction: 'ally',
-			hpInitial: 10000,
+			hpInitial: 1000,
 			x: canvas.rect.width / 2,
 			y: canvas.rect.height - 50,
 			d: new Vector({ x: 0, y: -1 }),
@@ -46,7 +46,7 @@ window.addEventListener( 'DOMContentLoaded', function () {
 		if ( Object.keys( allies ).length < 1 ) {
 			let unit = new Unit( {
 				canvas:     canvas,
-				mind:       Simple,
+				mind:       PathFinder,
 				fraction:   'ally',
 				color:      'rgb(255,230,0)',
 				x:          Math.random() * canvas.rect.width,
@@ -98,51 +98,86 @@ window.addEventListener( 'DOMContentLoaded', function () {
 		}));
 	}
 
-	function spawnWall ( x, y ) {
+	function spawnWall ( x, y, figure ) {
 		canvas.add( new Wall({
 			canvas: canvas,
 			friction: 0,
 			x: x,
-			y: y
+			y: y,
+			figureInitial: figure
 		}));
 	}
 
-	canvas = window.canvas = new Canvas({
-		middle: function () {
-			debug( {
-				objects: window.canvas && Object.keys( window.canvas.objects ).length,
-				collisionLayer: window.canvas && Object.keys( window.canvas.collisionLayer ).length,
-				unitLayer: window.canvas && Object.keys( window.canvas.unitLayer ).length,
-				lastTime: window.canvas && window.canvas.lastTime,
-				deltaTime: window.canvas && window.canvas.deltaTime,
-				keys: window.keys,
-				mousepos: window.mousepos,
-				touch: window.touchButtons,
-				dco: window.directionControllerOffset,
-				gamepad: window.gamepad && window.gamepad.id,
-				allies: Object.keys( allies ).length,
-				enemies: Object.keys( enemies ).length,
-				hero: window.hero && window.hero.info()
-			});
+	canvas = window.canvas = new Canvas();
 
-			if ( window.keys && window.keys[ 'KeyR' ] ) {
-				if ( window.hero && window.hero.alive ) window.hero.die();
-				window.spawnHero();
+	canvas.middle.push( function () {
+		debug( {
+			objects: window.canvas && Object.keys( window.canvas.objects ).length,
+			collisionLayer: window.canvas && Object.keys( window.canvas.collisionLayer ).length,
+			unitLayer: window.canvas && Object.keys( window.canvas.unitLayer ).length,
+			lastTime: window.canvas && window.canvas.lastTime,
+			deltaTime: window.canvas && window.canvas.deltaTime,
+			keys: window.keys,
+			mouse: window.mouse,
+			touch: window.touchButtons,
+			dco: window.directionControllerOffset,
+			gamepad: window.gamepad && window.gamepad.id,
+			allies: Object.keys( allies ).length,
+			enemies: Object.keys( enemies ).length,
+			hero: window.hero && window.hero.info()
+		});
+
+		if ( window.keys && window.keys[ 'KeyR' ] ) {
+			if ( window.hero && window.hero.alive ) window.hero.die();
+			window.spawnHero();
+		}
+
+		if ( window.touchButtons && window.touchButtons[ 'respawnButton' ] ) {
+			if ( window.hero && window.hero.alive ) window.hero.die();
+			window.spawnHero();
+		}
+
+		if ( window.mouse && window.mouse[2] ) {
+			if ( window.mouse[2] === 'pressed' ) {
+				console.log( 'btn 2 pressed' );
+
+				window.newWall = {
+					sx: window.mouse.x,
+					sy: window.mouse.y
+				}
+
+				window.mouse[2] = 'holding';
 			}
 
-			if ( window.touchButtons && window.touchButtons[ 'respawnButton' ] ) {
-				if ( window.hero && window.hero.alive ) window.hero.die();
-				window.spawnHero();
+			if ( window.mouse[2] === 'released' ) {
+				console.log( 'btn 2 released' );
+
+				window.newWall.ex = window.mouse.x;
+				window.newWall.ey = window.mouse.y;
+
+				window.newWall.hw = Math.abs( ( window.newWall.ex - window.newWall.sx ) / 2 );
+				window.newWall.hh = Math.abs( ( window.newWall.ey - window.newWall.sy ) / 2 );
+
+				window.newWall.x = window.newWall.hw + window.newWall.sx;
+				window.newWall.y = window.newWall.hh + window.newWall.sy;
+
+				window.newWall.figure = [
+					{ x: -window.newWall.hw, y: -window.newWall.hh },
+					{ x: +window.newWall.hw, y: -window.newWall.hh },
+					{ x: +window.newWall.hw, y: +window.newWall.hh },
+					{ x: -window.newWall.hw, y: +window.newWall.hh }
+				];
+
+				console.log( 'newWall', window.newWall );
+				spawnWall( window.newWall.x, window.newWall.y, window.newWall.figure );
+				window.newWall = null;
+
+				window.mouse[2] = null;
 			}
 		}
 	});
 
 	spawnHero();
-	spawnWall( canvas.rect.width * .15, canvas.rect.height * .5 );
-	spawnWall( canvas.rect.width * .35, canvas.rect.height * .5 );
-	spawnWall( canvas.rect.width * .5, canvas.rect.height * .5 );
-	spawnWall( canvas.rect.width * .65, canvas.rect.height * .5 );
-	spawnWall( canvas.rect.width * .85, canvas.rect.height * .5 );
 	setInterval( spawnEnemy, 1000 );
 	// setInterval( spawnAlly, 5000 );
 	setInterval( spawnParticle, 50 );

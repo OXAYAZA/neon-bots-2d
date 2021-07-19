@@ -6,7 +6,7 @@ import Grid from '../pathfinding/Grid.js';
 function Canvas ( props ) {
 	this.node = document.getElementById( 'root' );
 	this.ctx = this.node.getContext( '2d' );
-	this.middle = null;
+	this.middle = [];
 	this.rect = null;
 	this.objects = {};
 	this.collisionLayer = {};
@@ -49,7 +49,9 @@ Canvas.prototype.render = function ( currentTime = 0 ) {
 		}
 	}
 
-	if ( this.middle instanceof Function ) this.middle.call( this );
+	this.middle.forEach( ( cb ) => {
+		if ( cb instanceof Function ) cb.call( this );
+	});
 
 	for ( let id in this.objects ) {
 		let obj = this.objects[ id ];

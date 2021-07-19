@@ -3,6 +3,7 @@ import TouchButton from './TouchButton.js';
 
 export default function initControl () {
 	let
+		elCanvas = document.querySelector( '#root' ),
 		elBtnPlay = document.querySelector( '#play' ),
 		elBtnPause = document.querySelector( '#pause' ),
 		elBtnTouch = document.querySelector( '#touch' ),
@@ -13,10 +14,23 @@ export default function initControl () {
 		elTouchSpawn = document.querySelector( '#respawn-button' );
 
 	window.keys = {};
-	window.mousepos = {};
+	window.mouse = {
+		x: null,
+		y: null,
+		0: null,
+		1: null,
+		2: null
+	};
 	window.touchButtons = {};
 	window.directionControllerOffset = {};
 	window.gamepad = null;
+
+	if ( elCanvas ) {
+		elCanvas.addEventListener( 'contextmenu', function ( event ) {
+			event.preventDefault();
+			return false;
+		});
+	}
 
 	document.addEventListener( 'keydown', function ( event ) {
 		window.keys[ event.code ] = true;
@@ -42,10 +56,18 @@ export default function initControl () {
 	});
 
 	document.addEventListener( 'mousemove', function ( event ) {
-		window.mousepos = {
-			x: event.clientX,
-			y: event.clientY
-		};
+		window.mouse.x = event.clientX;
+		window.mouse.y = event.clientY;
+	});
+
+	document.addEventListener( 'mousedown', function ( event ) {
+		event.preventDefault();
+		window.mouse[ event.button ] = 'pressed';
+	});
+
+	document.addEventListener( 'mouseup', function ( event ) {
+		event.preventDefault();
+		window.mouse[ event.button ] = 'released';
 	});
 
 	window.addEventListener( 'gamepadconnected', function ( event ) {

@@ -57,12 +57,13 @@ class PathFinder {
 			this.grid
 		);
 
-		this.path = Util.smoothenPath( this.grid, this.path );
-
-		this.direction = new Vector({ x: this.path[1][0] * 10 - this.body.x, y: this.path[1][1] * 10 - this.body.y });
-		this.angle =
-			Math.atan2( this.body.d.x, this.body.d.y ) -
-			Math.atan2( this.direction.x, this.direction.y );
+		if ( this.path && this.path.length ) {
+			this.path = Util.smoothenPath( this.grid, this.path );
+			this.direction = new Vector({ x: this.path[1][0] * 10 - this.body.x, y: this.path[1][1] * 10 - this.body.y });
+			this.angle =
+				Math.atan2( this.body.d.x, this.body.d.y ) -
+				Math.atan2( this.direction.x, this.direction.y );
+		}
 	}
 
 	rotate () {
@@ -78,7 +79,7 @@ class PathFinder {
 	}
 
 	move () {
-		if ( this.distance > 100 ) {
+		if ( this.distance > 200 ) {
 			this.body.moveForward();
 		} else if ( this.distance < 100 ) {
 			this.body.moveBackward();
@@ -98,7 +99,7 @@ class PathFinder {
 			this.calculate();
 			this.rotate();
 			this.move();
-			// this.attack();
+			this.attack();
 		}
 	}
 
@@ -107,10 +108,12 @@ class PathFinder {
 		this.body.canvas.ctx.strokeStyle = this.body.color;
 		this.body.canvas.ctx.beginPath();
 
-		this.path.forEach( ( cell, index ) => {
-			this.body.canvas.ctx.lineTo( cell[0]*10, cell[1]*10 );
-			this.body.canvas.ctx.moveTo( cell[0]*10, cell[1]*10 );
-		});
+		if ( this.path ) {
+			this.path.forEach( ( cell ) => {
+				this.body.canvas.ctx.lineTo( cell[0]*10, cell[1]*10 );
+				this.body.canvas.ctx.moveTo( cell[0]*10, cell[1]*10 );
+			});
+		}
 
 		this.body.canvas.ctx.closePath();
 		this.body.canvas.ctx.stroke();

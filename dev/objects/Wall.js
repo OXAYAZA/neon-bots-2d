@@ -4,10 +4,10 @@ import Obj from "./Obj.js";
 class Wall extends Obj {
 	collide = true;
 	figureInitial = [
-		{ x: -108,  y: -7 },
-		{ x: -108,  y: 7 },
-		{ x: 108,  y: 7 },
-		{ x: 108, y: -7 }
+		{ x: -3,  y: -3 },
+		{ x: -3,  y: 3 },
+		{ x: 3,  y: 3 },
+		{ x: 3, y: -3 }
 	];
 
 	constructor ( props ) {
