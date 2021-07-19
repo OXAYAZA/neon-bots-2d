@@ -1,5 +1,5 @@
 import merge from './merge.js';
-import figuresIntersect from './figuresIntersect.js';
+import objectsIntersect from './objectsIntersect.js';
 
 // Canvas prototype
 function Canvas ( props ) {
@@ -39,7 +39,7 @@ Canvas.prototype.render = function ( currentTime = 0 ) {
 			let u2 = this.collisionLayer[ u2ID ];
 			if ( u1 === u2 || !u2.figureSegments ) continue;
 
-			if ( figuresIntersect( u1.figureSegments, u2.figureSegments ) ) {
+			if ( objectsIntersect( u1, u2 ) ) {
 				if ( u1.collide ) u1.collision( u2 );
 				if ( u2.collide ) u2.collision( u1 );
 			}

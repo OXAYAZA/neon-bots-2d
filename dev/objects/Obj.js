@@ -1,5 +1,5 @@
 import merge from '../util/merge.js';
-import figuresIntersect from '../util/figuresIntersect.js';
+import objectsIntersect from '../util/objectsIntersect.js';
 import Vector from "../util/Vector.js";
 
 class Obj {
@@ -107,18 +107,26 @@ class Obj {
     minY = Math.round( minY / 10 );
     maxY = Math.round( maxY / 10 );
 
-    // TODO Должно быть исправлено ограничением игровой области
+    // TODO try должен быть исправлен ограничением игровой области
     try {
       for ( let x = minX; x <= maxX; x++ ) {
         for ( let y = minY; y <= maxY; y++ ) {
-          let segments = [
-            [{ x: x * 10 - 7 , y: y * 10 - 7 }, { x: x * 10 + 7 , y: y * 10 - 7 }],
-            [{ x: x * 10 + 7 , y: y * 10 - 7 }, { x: x * 10 + 7 , y: y * 10 + 7 }],
-            [{ x: x * 10 + 7 , y: y * 10 + 7 }, { x: x * 10 - 7 , y: y * 10 + 7 }],
-            [{ x: x * 10 - 7 , y: y * 10 + 7 }, { x: x * 10 - 7 , y: y * 10 - 7 }]
-          ];
+          let tmpSquare = {
+            figureFinal: [
+              { x: x * 10 - 7 , y: y * 10 - 7 },
+              { x: x * 10 + 7 , y: y * 10 - 7 },
+              { x: x * 10 + 7 , y: y * 10 + 7 },
+              { x: x * 10 - 7 , y: y * 10 + 7 }
+            ],
+            figureSegments: [
+              [{ x: x * 10 - 7 , y: y * 10 - 7 }, { x: x * 10 + 7 , y: y * 10 - 7 }],
+              [{ x: x * 10 + 7 , y: y * 10 - 7 }, { x: x * 10 + 7 , y: y * 10 + 7 }],
+              [{ x: x * 10 + 7 , y: y * 10 + 7 }, { x: x * 10 - 7 , y: y * 10 + 7 }],
+              [{ x: x * 10 - 7 , y: y * 10 + 7 }, { x: x * 10 - 7 , y: y * 10 - 7 }]
+            ]
+          }
 
-          if ( figuresIntersect( segments, this.figureSegments ) ) {
+          if ( objectsIntersect( tmpSquare, this ) ) {
             this.canvas.grid[ x ][ y ] = this;
           }
         }

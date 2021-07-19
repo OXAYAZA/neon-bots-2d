@@ -9,6 +9,7 @@ import Dummy from './objects/Dummy.js';
 import Simple from './bots/Simple.js';
 import PathFinder from './bots/PathFinder.js';
 import ControlType2 from './bots/ControlType2.js';
+import pointInPoly from './util/pointInPoly.js';
 
 
 // Debug
@@ -38,14 +39,14 @@ window.addEventListener( 'DOMContentLoaded', function () {
 			v: new Vector({ x: 0, y: -canvas.rect.height / 2 }),
 			figureInitial: [
 				{ x: 0,  y: 0 },
-				{ x: -20,  y: 20 },
-				{ x: -8,  y: 20 },
-				{ x: 40, y: 0 },
-				{ x: -8,  y: -20 },
-				{ x: -20,  y: -20 }
+				{ x: -40,  y: 40 },
+				{ x: -16,  y: 40 },
+				{ x: 80, y: 0 },
+				{ x: -16,  y: -40 },
+				{ x: -40,  y: -40 }
 			],
 			bulletSlots: [
-				{ x: 45, y: 0, a: 0 }
+				{ x: 85, y: 0, a: 0 }
 			]
 		});
 
@@ -77,7 +78,7 @@ window.addEventListener( 'DOMContentLoaded', function () {
 
 	function spawnEnemy () {
 		// if ( Object.keys( enemies ).length < 10 ) {
-		if ( Object.keys( enemies ).length < 10 ) {
+		if ( Object.keys( enemies ).length < 1 ) {
 			let unit = new Dummy( {
 				canvas:   canvas,
 				mind:     PathFinder,
