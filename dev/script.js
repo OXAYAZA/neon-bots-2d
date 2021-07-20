@@ -32,11 +32,22 @@ window.addEventListener( 'DOMContentLoaded', function () {
 		hero = window.hero = new Unit({
 			mind: ControlType2,
 			fraction: 'ally',
-			hpInitial: 1000,
+			hpInitial: 1000000,
 			x: map.width / 2,
 			y: map.height - 50,
 			d: new Vector({ x: 0, y: -1 }),
-			v: new Vector({ x: 0, y: -map.height / 2 })
+			v: new Vector({ x: 0, y: -map.height / 2 }),
+			// figureInitial: [
+			// 	{ x: 0,  y: 0 },
+			// 	{ x: -20,  y: -20 },
+			// 	{ x: -8,  y: -20 },
+			// 	{ x: 40, y: 0 },
+			// 	{ x: -8,  y: 20 },
+			// 	{ x: -20,  y: 20 }
+			// ],
+			// bulletSlots: [
+			// 	{ x: 45, y: 0, a: 0 }
+			// ]
 		});
 
 		map.add( hero );
@@ -126,76 +137,78 @@ window.addEventListener( 'DOMContentLoaded', function () {
 
 	canvas.init( map );
 
-	// canvas.onMiddle.push( function () {
-	// 	debug( {
-	// 		objects: window.canvas && Object.keys( window.canvas.objects ).length,
-	// 		collisionLayer: window.canvas && Object.keys( window.canvas.collisionLayer ).length,
-	// 		unitLayer: window.canvas && Object.keys( window.canvas.unitLayer ).length,
-	// 		lastTime: window.canvas && window.canvas.lastTime,
-	// 		deltaTime: window.canvas && window.canvas.deltaTime,
-	// 		keys: window.keys,
-	// 		mouse: window.mouse,
-	// 		touch: window.touchButtons,
-	// 		dco: window.directionControllerOffset,
-	// 		gamepad: window.gamepad && window.gamepad.id,
-	// 		allies: Object.keys( allies ).length,
-	// 		enemies: Object.keys( enemies ).length,
-	// 		hero: window.hero && window.hero.info()
-	// 	});
-	//
-	// 	if ( window.keys && window.keys[ 'KeyR' ] ) {
-	// 		if ( window.hero && window.hero.alive ) window.hero.die();
-	// 		window.spawnHero();
-	// 	}
-	//
-	// 	if ( window.touchButtons && window.touchButtons[ 'respawnButton' ] ) {
-	// 		if ( window.hero && window.hero.alive ) window.hero.die();
-	// 		window.spawnHero();
-	// 	}
-	//
-	// 	if ( window.mouse && window.mouse[2] ) {
-	// 		if ( window.mouse[2] === 'pressed' ) {
-	// 			console.log( 'btn 2 pressed' );
-	//
-	// 			window.newWall = {
-	// 				sx: window.mouse.x,
-	// 				sy: window.mouse.y
-	// 			}
-	//
-	// 			window.mouse[2] = 'holding';
-	// 		}
-	//
-	// 		if ( window.mouse[2] === 'released' ) {
-	// 			console.log( 'btn 2 released' );
-	//
-	// 			window.newWall.ex = window.mouse.x;
-	// 			window.newWall.ey = window.mouse.y;
-	//
-	// 			window.newWall.hw = Math.abs( ( window.newWall.ex - window.newWall.sx ) / 2 );
-	// 			window.newWall.hh = Math.abs( ( window.newWall.ey - window.newWall.sy ) / 2 );
-	//
-	// 			window.newWall.x = window.newWall.hw + window.newWall.sx;
-	// 			window.newWall.y = window.newWall.hh + window.newWall.sy;
-	//
-	// 			window.newWall.figure = [
-	// 				{ x: -window.newWall.hw, y: -window.newWall.hh },
-	// 				{ x: +window.newWall.hw, y: -window.newWall.hh },
-	// 				{ x: +window.newWall.hw, y: +window.newWall.hh },
-	// 				{ x: -window.newWall.hw, y: +window.newWall.hh }
-	// 			];
-	//
-	// 			console.log( 'newWall', window.newWall );
-	// 			spawnWall( window.newWall.x, window.newWall.y, window.newWall.figure );
-	// 			window.newWall = null;
-	//
-	// 			window.mouse[2] = null;
-	// 		}
-	// 	}
-	// });
+	canvas.onTickStart.push( function () {
+		if ( window.keys && window.keys[ 'KeyR' ] ) {
+			if ( window.hero && window.hero.alive ) window.hero.die();
+			window.spawnHero();
+		}
+
+		if ( window.touchButtons && window.touchButtons[ 'respawnButton' ] ) {
+			if ( window.hero && window.hero.alive ) window.hero.die();
+			window.spawnHero();
+		}
+
+		// if ( window.mouse && window.mouse[2] ) {
+		// 	if ( window.mouse[2] === 'pressed' ) {
+		// 		console.log( 'btn 2 pressed' );
+		//
+		// 		window.newWall = {
+		// 			sx: window.mouse.x,
+		// 			sy: window.mouse.y
+		// 		}
+		//
+		// 		window.mouse[2] = 'holding';
+		// 	}
+		//
+		// 	if ( window.mouse[2] === 'released' ) {
+		// 		console.log( 'btn 2 released' );
+		//
+		// 		window.newWall.ex = window.mouse.x;
+		// 		window.newWall.ey = window.mouse.y;
+		//
+		// 		window.newWall.hw = Math.abs( ( window.newWall.ex - window.newWall.sx ) / 2 );
+		// 		window.newWall.hh = Math.abs( ( window.newWall.ey - window.newWall.sy ) / 2 );
+		//
+		// 		window.newWall.x = window.newWall.hw + window.newWall.sx;
+		// 		window.newWall.y = window.newWall.hh + window.newWall.sy;
+		//
+		// 		window.newWall.figure = [
+		// 			{ x: -window.newWall.hw, y: -window.newWall.hh },
+		// 			{ x: +window.newWall.hw, y: -window.newWall.hh },
+		// 			{ x: +window.newWall.hw, y: +window.newWall.hh },
+		// 			{ x: -window.newWall.hw, y: +window.newWall.hh }
+		// 		];
+		//
+		// 		console.log( 'newWall', window.newWall );
+		// 		spawnWall( window.newWall.x, window.newWall.y, window.newWall.figure );
+		// 		window.newWall = null;
+		//
+		// 		window.mouse[2] = null;
+		// 	}
+		// }
+	});
+
+	canvas.onTickEnd.push( function () {
+		debug( {
+			objects: window.map && Object.keys( window.map.objects ).length,
+			collisionLayer: window.map && Object.keys( window.map.collisionLayer ).length,
+			unitLayer: window.map && Object.keys( window.map.unitLayer ).length,
+			lastTime: window.canvas && window.canvas.lastTime,
+			deltaTime: window.canvas && window.canvas.deltaTime,
+			keys: window.keys,
+			mouse: window.mouse,
+			touch: window.touchButtons,
+			dco: window.directionControllerOffset,
+			gamepad: window.gamepad && window.gamepad.id,
+			allies: Object.keys( allies ).length,
+			enemies: Object.keys( enemies ).length,
+			hero: window.hero && window.hero.info()
+		});
+	});
 
 	spawnHero();
 	spawnWall( 105, 405, 695, 415 );
-	setInterval( spawnAlly, 5000 );
+	// setInterval( spawnAlly, 5000 );
 	setInterval( spawnEnemy, 1000 );
 	setInterval( spawnParticle, 50 );
 });

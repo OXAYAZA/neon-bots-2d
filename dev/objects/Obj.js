@@ -38,6 +38,12 @@ class Obj {
   onDead = null;                     // Посмертный колбек
   onRender = null;                   // Колбек после отрисовки
 
+  renderOpts = {                     // Дополнительные параметры отрисовки
+    nVec: false,                     // Нормальные векторы отрезков фигуры
+    dVec: false,                     // Вектор направления
+    vVec: false                      // Вектор скорости
+  };
+
   constructor ( props = {} ) {
     // TODO Добавить проверки параметров
 
@@ -146,7 +152,6 @@ class Obj {
 
   render ( offset ) {
     this.map.ctx.fillStyle = this.color;
-    // this.map.ctx.globalAlpha = .3;
     this.map.ctx.beginPath();
 
     this.figureFinal.forEach( ( point, index ) => {
@@ -156,7 +161,49 @@ class Obj {
 
     this.map.ctx.closePath();
     this.map.ctx.fill();
-    // this.map.ctx.globalAlpha = 1;
+
+    // Нормальные векторы
+    if ( this.renderOpts.nVec ) {
+      this.figureSegments.forEach( ( segment ) => {
+        let
+          x1 = segment[0].x,
+          x2 = segment[1].x,
+          y1 = segment[0].y,
+          y2 = segment[1].y,
+          nx = x1 + ( x2 - x1 ) / 2,
+          ny = y1 + ( y2 - y1 ) / 2,
+          vec = new Vector({ x: x2 - x1, y: y2 - y1 }).rotateD( -90 ).setLength( 10 );
+
+        this.map.ctx.strokeStyle = 'rgba( 255, 255, 255 )';
+        this.map.ctx.beginPath();
+        this.map.ctx.moveTo( offset.x + nx, offset.y + ny );
+        this.map.ctx.lineTo( offset.x + nx + vec.x, offset.y + ny + vec.y );
+        this.map.ctx.closePath();
+        this.map.ctx.stroke();
+      });
+    }
+
+    // Вектор направления
+    if ( this.renderOpts.dVec ) {
+      let dVec = new Vector( this.d ).setLength( 30 );
+      this.map.ctx.strokeStyle = 'rgb( 50, 71, 210 )';
+      this.map.ctx.beginPath();
+      this.map.ctx.moveTo( offset.x + this.x, offset.y + this.y );
+      this.map.ctx.lineTo( offset.x + this.x + dVec.x, offset.y + this.y + dVec.y );
+      this.map.ctx.closePath();
+      this.map.ctx.stroke();
+    }
+
+    // Вектор скорости
+    if ( this.renderOpts.vVec ) {
+      let vVec = new Vector( this.v ).multiply( .2 );
+      this.map.ctx.strokeStyle = 'rgb( 210, 50, 50 )';
+      this.map.ctx.beginPath();
+      this.map.ctx.moveTo( offset.x + this.x, offset.y + this.y );
+      this.map.ctx.lineTo( offset.x + this.x + vVec.x, offset.y + this.y + vVec.y );
+      this.map.ctx.closePath();
+      this.map.ctx.stroke();
+    }
 
     if ( this.onRender instanceof Function ) this.onRender.call( this );
   }

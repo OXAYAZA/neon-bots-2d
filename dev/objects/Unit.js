@@ -14,11 +14,11 @@ class Unit extends Obj {
   hpInitial = 100;
   figureInitial = [
     { x: 0,  y: 0 },
-    { x: -5,  y: 5 },
-    { x: -2,  y: 5 },
-    { x: 10, y: 0 },
+    { x: -5,  y: -5 },
     { x: -2,  y: -5 },
-    { x: -5,  y: -5 }
+    { x: 10, y: 0 },
+    { x: -2,  y: 5 },
+    { x: -5,  y: 5 }
   ];
   mass = 50;
   reloadTime = .1;
@@ -28,6 +28,11 @@ class Unit extends Obj {
   ];
   bulletSlotsFinal = null;
   hp = null;
+  renderOpts = {
+    nVec: true,
+    dVec: true,
+    vVec: true
+  };
 
   constructor ( props ) {
     super( props );

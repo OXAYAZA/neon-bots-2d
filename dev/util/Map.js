@@ -83,8 +83,8 @@ class Map {
 		}
 
 		this.renderGrid();
-		this.renderCells();
-		this.renderBorder();
+		// this.renderCells();
+		// this.renderBorder();
 	}
 
 	renderBorder () {

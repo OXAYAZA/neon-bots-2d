@@ -10,6 +10,9 @@ class Canvas {
 	lastTime = 0;
 	map = null;
 
+	onTickStart = [];
+	onTickEnd = [];
+
 	constructor ( props ) {
 		merge( this, props );
 	}
@@ -36,17 +39,19 @@ class Canvas {
 
 		this.deltaTime = currentTime - this.lastTime;
 		this.ctx.clearRect( 0, 0, this.rect.width, this.rect.height );
+
+		this.onTickStart.forEach( ( cb ) => {
+			if ( cb instanceof Function ) cb.call( this );
+		});
+
 		this.map.calc( this.deltaTime );
 		this.map.render();
+
+		this.onTickEnd.forEach( ( cb ) => {
+			if ( cb instanceof Function ) cb.call( this );
+		});
+
 		this.lastTime = currentTime;
-
-		// this.onMiddle.forEach( ( cb ) => {
-		// 	if ( cb instanceof Function ) cb.call( this );
-		// });
-
-		// this.onEnd.forEach( ( cb ) => {
-		// 	if ( cb instanceof Function ) cb.call( this );
-		// });
 	}
 
 	resize () {

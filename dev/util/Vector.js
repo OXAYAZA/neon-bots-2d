@@ -195,4 +195,11 @@ Vector.prototype.rotateD = function ( deg ) {
 	return this;
 };
 
+Vector.prototype.setLength = function ( length ) {
+	let c = length / Math.sqrt( this.x * this.x + this.y * this.y  );
+	this.x *= c;
+	this.y *= c;
+	return this;
+};
+
 export default Vector;
