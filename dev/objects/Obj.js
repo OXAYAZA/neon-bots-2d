@@ -3,7 +3,7 @@ import objectsIntersect from '../util/objectsIntersect.js';
 import Vector from "../util/Vector.js";
 
 class Obj {
-  canvas;                            // Холст для отрисовки объекта
+  map = null;                        // Карта к которой привязан объект
   id;                                // Уникальный идентификатор объекта (обычно устанавливается холстом)
   delta = 0;                         // Коррекция по времени
   type = 'Object';                   // Тип объекта
@@ -39,11 +39,6 @@ class Obj {
   onRender = null;                   // Колбек после отрисовки
 
   constructor ( props = {} ) {
-    // Проверка параметров
-    if ( !props.canvas ) {
-      throw new Error( 'canvas is required property' );
-    }
-
     // TODO Добавить проверки параметров
 
     // Установка новых свойств
@@ -107,40 +102,25 @@ class Obj {
       if ( typeof( maxY ) !== 'number'  || point.y > maxY ) maxY = point.y;
     });
 
-    minX = Math.round( minX / 10 );
-    maxX = Math.round( maxX / 10 );
-    minY = Math.round( minY / 10 );
-    maxY = Math.round( maxY / 10 );
+    minX = ( minX - ( minX % this.map.cellSize ) ) / this.map.cellSize;
+    maxX = ( maxX - ( maxX % this.map.cellSize ) ) / this.map.cellSize;
+    minY = ( minY - ( minY % this.map.cellSize ) ) / this.map.cellSize;
+    maxY = ( maxY - ( maxY % this.map.cellSize ) ) / this.map.cellSize;
 
     // TODO try должен быть исправлен ограничением игровой области
     try {
       for ( let x = minX; x <= maxX; x++ ) {
         for ( let y = minY; y <= maxY; y++ ) {
-          let tmpSquare = {
-            figureFinal: [
-              { x: x * 10 - 7 , y: y * 10 - 7 },
-              { x: x * 10 + 7 , y: y * 10 - 7 },
-              { x: x * 10 + 7 , y: y * 10 + 7 },
-              { x: x * 10 - 7 , y: y * 10 + 7 }
-            ],
-            figureSegments: [
-              [{ x: x * 10 - 7 , y: y * 10 - 7 }, { x: x * 10 + 7 , y: y * 10 - 7 }],
-              [{ x: x * 10 + 7 , y: y * 10 - 7 }, { x: x * 10 + 7 , y: y * 10 + 7 }],
-              [{ x: x * 10 + 7 , y: y * 10 + 7 }, { x: x * 10 - 7 , y: y * 10 + 7 }],
-              [{ x: x * 10 - 7 , y: y * 10 + 7 }, { x: x * 10 - 7 , y: y * 10 - 7 }]
-            ]
-          }
-
-          if ( objectsIntersect( tmpSquare, this ) ) {
-            this.canvas.grid.nodes[y][x].walkable = false;
-            this.canvas.grid.nodes[y][x].obj = this;
+          if ( objectsIntersect( this.map.cellFigure( x, y ), this ) ) {
+            this.map.grid.nodes[y][x].walkable = false;
+            this.map.grid.nodes[y][x].obj = this;
             this.gridArr.push({ x: x, y: y });
           }
         }
       }
 
-      this.gridPos.x = Math.round( this.x / 10 );
-      this.gridPos.y = Math.round( this.y / 10 );
+      this.gridPos.x = Math.round( this.x / this.map.cellSize );
+      this.gridPos.y = Math.round( this.y / this.map.cellSize );
     } catch ( error ) {}
   }
 
@@ -160,21 +140,23 @@ class Obj {
   }
 
   die () {
-    this.canvas.remove( this );
+    this.map.remove( this );
     if ( this.onDead instanceof Function ) this.onDead.call( this );
   }
 
-  render () {
-    this.canvas.ctx.fillStyle = this.color;
-    this.canvas.ctx.beginPath();
+  render ( offset ) {
+    this.map.ctx.fillStyle = this.color;
+    // this.map.ctx.globalAlpha = .3;
+    this.map.ctx.beginPath();
 
     this.figureFinal.forEach( ( point, index ) => {
-      if ( index ) this.canvas.ctx.lineTo( point.x, point.y );
-      else this.canvas.ctx.moveTo( point.x, point.y );
+      if ( index ) this.map.ctx.lineTo( offset.x + point.x, offset.y + point.y );
+      else this.map.ctx.moveTo( offset.x + point.x, offset.y + point.y );
     });
 
-    this.canvas.ctx.closePath();
-    this.canvas.ctx.fill();
+    this.map.ctx.closePath();
+    this.map.ctx.fill();
+    // this.map.ctx.globalAlpha = 1;
 
     if ( this.onRender instanceof Function ) this.onRender.call( this );
   }

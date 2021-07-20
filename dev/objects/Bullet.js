@@ -29,8 +29,7 @@ class Bullet extends Obj {
     }
 
     for ( let i = 0; i < 10; i++ ) {
-      this.canvas.add( new Particle({
-        canvas: this.canvas,
+      this.map.add( new Particle({
         color: this.color,
         x: this.x,
         y: this.y,

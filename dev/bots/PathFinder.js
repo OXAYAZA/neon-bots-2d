@@ -27,8 +27,9 @@ class PathFinder {
 		this.target = null;
 		this.distance = Infinity;
 
-		Object.keys( window.canvas.unitLayer ).map( ( item ) => {
-			let target = window.canvas.unitLayer[ item ];
+		// TODO глобальная переменная window.map это плохо
+		Object.keys( window.map.unitLayer ).map( ( item ) => {
+			let target = window.map.unitLayer[ item ];
 			let distance = Math.sqrt( Math.pow( target.x - this.body.x, 2 ) + Math.pow( target.y - this.body.y, 2 ) );
 
 			if ( this.body !== target && target.fraction && this.body.fraction !== target.fraction && target.alive && distance < this.distance ) {
@@ -39,7 +40,7 @@ class PathFinder {
 	}
 
 	calculate () {
-		this.grid = this.body.canvas.grid.clone();
+		this.grid = this.body.map.grid.clone();
 
 		this.body.gridArr.forEach( ( cell ) => {
 			this.grid.nodes[cell.y][cell.x].walkable = true;
@@ -60,6 +61,7 @@ class PathFinder {
 		if ( this.path && this.path.length ) {
 			this.path = Util.smoothenPath( this.grid, this.path );
 			this.direction = new Vector({ x: this.path[1][0] * 10 - this.body.x, y: this.path[1][1] * 10 - this.body.y });
+			// TODO переделать определение угла
 			this.angle =
 				Math.atan2( this.body.d.x, this.body.d.y ) -
 				Math.atan2( this.direction.x, this.direction.y );
@@ -104,20 +106,25 @@ class PathFinder {
 	}
 
 	render () {
-		this.body.canvas.ctx.globalAlpha = .3;
-		this.body.canvas.ctx.strokeStyle = this.body.color;
-		this.body.canvas.ctx.beginPath();
+		let
+			ctx = this.body.map.ctx,
+			offset = this.body.map.offset,
+			csz = this.body.map.cellSize;
+
+		ctx.globalAlpha = .3;
+		ctx.strokeStyle = this.body.color;
+		ctx.beginPath();
 
 		if ( this.path ) {
 			this.path.forEach( ( cell ) => {
-				this.body.canvas.ctx.lineTo( cell[0]*10, cell[1]*10 );
-				this.body.canvas.ctx.moveTo( cell[0]*10, cell[1]*10 );
+				ctx.lineTo( offset.x + cell[0] * csz, offset.y + cell[1] * csz );
+				ctx.moveTo( offset.x + cell[0] * csz, offset.y + cell[1] * csz );
 			});
 		}
 
-		this.body.canvas.ctx.closePath();
-		this.body.canvas.ctx.stroke();
-		this.body.canvas.ctx.globalAlpha = 1;
+		ctx.closePath();
+		ctx.stroke();
+		ctx.globalAlpha = 1;
 	}
 
 	info () {

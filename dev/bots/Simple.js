@@ -15,8 +15,9 @@ class Simple {
 		this.target = null;
 		this.distance = Infinity;
 
-		Object.keys( window.canvas.unitLayer ).map( ( item ) => {
-			let target = window.canvas.unitLayer[ item ];
+		// TODO глобальная переменная window.map это плохо
+		Object.keys( window.map.unitLayer ).map( ( item ) => {
+			let target = window.map.unitLayer[ item ];
 			let distance = Math.sqrt( Math.pow( target.x - this.body.x, 2 ) + Math.pow( target.y - this.body.y, 2 ) );
 
 			if ( this.body !== target && target.fraction && this.body.fraction !== target.fraction && target.alive && distance < this.distance ) {
@@ -29,6 +30,7 @@ class Simple {
 	calculate () {
 		this.direction = new Vector({ x: this.target.x - this.body.x, y: this.target.y - this.body.y });
 		this.distance = this.direction.length();
+		// TODO переделать определение угла
 		// this.angle = Math.acos(
 		// 	( ( this.direction.x * this.body.d.x ) + ( this.direction.y * this.body.d.y ) ) /
 		// 	( this.direction.length() * this.body.d.length() )

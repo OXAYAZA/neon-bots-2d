@@ -14,8 +14,8 @@ class ControlType2 {
 
 	calculate () {
 		if ( window.mouse.x && window.mouse.y ) {
-			this.target.x = window.mouse.x;
-			this.target.y = window.mouse.y;
+			this.target.x = window.mouse.x - this.body.map.offset.x;
+			this.target.y = window.mouse.y - this.body.map.offset.y;
 
 			this.direction = new Vector({
 				x: this.target.x - this.body.x,
@@ -52,14 +52,6 @@ class ControlType2 {
 			this.body.moveBackward();
 		}
 
-		// if ( window.keys[ 'KeyQ' ] ) {
-		// 	this.body.moveLeft();
-		// }
-
-		// if ( window.keys[ 'KeyE' ] ) {
-		// 	this.body.moveRight();
-		// }
-
 		if ( window.keys[ 'KeyA' ] ) {
 			this.body.moveLeft();
 		}
@@ -72,6 +64,7 @@ class ControlType2 {
 			this.body.shot();
 		}
 
+		// TODO Тач управление
 		// if ( window.directionControllerOffset.x < -.5 ) {
 		// 	this.body.rotateLeft();
 		// }
@@ -87,10 +80,10 @@ class ControlType2 {
 		// if ( window.directionControllerOffset.y > .5 ) {
 		// 	this.body.moveBackward();
 		// }
-
-		if ( window.touchButtons[ 'shotButton' ] ) {
-			this.body.shot();
-		}
+		//
+		// if ( window.touchButtons[ 'shotButton' ] ) {
+		// 	this.body.shot();
+		// }
 	}
 
 	info () {

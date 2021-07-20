@@ -37,8 +37,7 @@ class Unit extends Obj {
 
   explode () {
     for ( let i = 0; i < this.mass; i++ ) {
-      this.canvas.add( new Particle({
-        canvas: this.canvas,
+      this.map.add( new Particle({
         color: this.color,
         x: this.x,
         y: this.y,
@@ -51,8 +50,7 @@ class Unit extends Obj {
 
   moveEffect () {
     if ( this.v.length() > 2 ) {
-      this.canvas.add( new Particle({
-        canvas: this.canvas,
+      this.map.add( new Particle({
         color: this.color,
         x: this.x,
         y: this.y,
@@ -116,8 +114,7 @@ class Unit extends Obj {
   shot () {
     if ( !this.reloading ) {
       this.bulletSlotsFinal.forEach( ( point ) => {
-        this.canvas.add( new Bullet({
-          canvas: this.canvas,
+        this.map.add( new Bullet({
           friction: 0,
           color: this.color,
           x: point.x,
@@ -134,7 +131,7 @@ class Unit extends Obj {
   die () {
     this.explode();
     this.alive = false;
-    this.canvas.remove( this );
+    this.map.remove( this );
     if ( this.onDead instanceof Function ) this.onDead.call( this );
   }
 
