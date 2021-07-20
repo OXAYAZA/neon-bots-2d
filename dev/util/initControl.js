@@ -62,12 +62,12 @@ export default function initControl () {
 
 	document.addEventListener( 'mousedown', function ( event ) {
 		event.preventDefault();
-		window.mouse[ event.button ] = 'pressed';
+		window.mouse[ event.button ] = true;
 	});
 
 	document.addEventListener( 'mouseup', function ( event ) {
 		event.preventDefault();
-		window.mouse[ event.button ] = 'released';
+		window.mouse[ event.button ] = false;
 	});
 
 	window.addEventListener( 'gamepadconnected', function ( event ) {

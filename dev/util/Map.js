@@ -82,9 +82,9 @@ class Map {
 			this.objects[ id ].render( this.offset );
 		}
 
-		this.renderGrid();
+		// this.renderGrid();
 		// this.renderCells();
-		// this.renderBorder();
+		this.renderBorder();
 	}
 
 	renderBorder () {

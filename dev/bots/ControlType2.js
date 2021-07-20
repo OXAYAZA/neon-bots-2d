@@ -60,7 +60,7 @@ class ControlType2 {
 			this.body.moveRight();
 		}
 
-		if ( window.keys[ 'Space' ] ) {
+		if ( window.mouse[ 0 ] ) {
 			this.body.shot();
 		}
 

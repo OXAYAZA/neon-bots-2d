@@ -5,9 +5,9 @@ class Wall extends Obj {
 	collide = true;
 	figureInitial = [
 		{ x: -3,  y: -3 },
-		{ x: -3,  y: 3 },
+		{ x: 3,  y: -3 },
 		{ x: 3,  y: 3 },
-		{ x: 3, y: -3 }
+		{ x: -3, y: 3 }
 	];
 
 	constructor ( props ) {

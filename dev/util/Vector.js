@@ -160,6 +160,10 @@ Vector.prototype.angleD = function () {
 	return this.angle() * 180 / Math.PI;
 };
 
+Vector.prototype.clone = function () {
+	return new Vector( this );
+}
+
 Vector.prototype.add = function ( vec ) {
 	this.x += vec.x;
 	this.y += vec.y;
@@ -179,6 +183,24 @@ Vector.prototype.multiply = function ( scalar ) {
 	return this;
 }
 
+/**
+ * Скалярное произведение векторов
+ * @param {Vector} vec - второй вектор
+ * @returns {number} - скаляр
+ */
+Vector.prototype.product = function ( vec ) {
+	return this.x * vec.x + this.y * vec.y;
+}
+
+/**
+ * Определение косинуса угла между векторами
+ * @param {Vector} vec - второй вектор
+ * @returns {number} - косинус угла между векторами
+ */
+Vector.prototype.angleCos = function ( vec ) {
+	return this.product( vec ) / ( this.length() * vec.length() );
+}
+
 Vector.prototype.rotate = function ( rad ) {
 	let
 		x = this.x * Math.cos( rad ) - this.y * Math.sin( rad ),
@@ -195,10 +217,27 @@ Vector.prototype.rotateD = function ( deg ) {
 	return this;
 };
 
+Vector.prototype.normalize = function () {
+	let c = 1 / Math.sqrt( this.x * this.x + this.y * this.y  );
+	this.x *= c;
+	this.y *= c;
+	return this;
+}
+
 Vector.prototype.setLength = function ( length ) {
 	let c = length / Math.sqrt( this.x * this.x + this.y * this.y  );
 	this.x *= c;
 	this.y *= c;
+	return this;
+};
+
+/**
+ * Отражение вектора
+ * https://habr.com/ru/post/105882/
+ * @param {Vector} vec - нормальный вектор для отражения
+ */
+Vector.prototype.reflect = function ( vec ) {
+	this.subtract( vec.clone().multiply(2 ).multiply( this.product( vec ) / vec.product( vec ) ) );
 	return this;
 };
 

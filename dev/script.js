@@ -11,6 +11,7 @@ import Simple from './bots/Simple.js';
 import PathFinder from './bots/PathFinder.js';
 import ControlType2 from './bots/ControlType2.js';
 
+window.Vector = Vector;
 
 // Debug
 function debug ( data ) {
@@ -30,24 +31,24 @@ window.addEventListener( 'DOMContentLoaded', function () {
 
 	window.spawnHero = function spawnHero () {
 		hero = window.hero = new Unit({
-			mind: ControlType2,
+			// mind: ControlType2,
 			fraction: 'ally',
 			hpInitial: 1000000,
 			x: map.width / 2,
 			y: map.height - 50,
 			d: new Vector({ x: 0, y: -1 }),
 			v: new Vector({ x: 0, y: -map.height / 2 }),
-			// figureInitial: [
-			// 	{ x: 0,  y: 0 },
-			// 	{ x: -20,  y: -20 },
-			// 	{ x: -8,  y: -20 },
-			// 	{ x: 40, y: 0 },
-			// 	{ x: -8,  y: 20 },
-			// 	{ x: -20,  y: 20 }
-			// ],
-			// bulletSlots: [
-			// 	{ x: 45, y: 0, a: 0 }
-			// ]
+			figureInitial: [
+				{ x: 0,  y: 0 },
+				{ x: -20,  y: -20 },
+				{ x: -8,  y: -20 },
+				{ x: 40, y: 0 },
+				{ x: -8,  y: 20 },
+				{ x: -20,  y: 20 }
+			],
+			bulletSlots: [
+				{ x: 45, y: 0, a: 0 }
+			]
 		});
 
 		map.add( hero );
