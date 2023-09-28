@@ -11,7 +11,7 @@ import Heuristic from './Heuristic.js';
 import DiagonalMovement from './DiagonalMovement.js';
 
 /**
- * A* path-finder. Based upon https://github.com/bgrins/javascript-astar
+ * A* pathfinder. Based upon https://github.com/bgrins/javascript-astar
  * @constructor
  * @param {Object} opt
  * @param {boolean} opt.allowDiagonal Whether diagonal movement is allowed.
@@ -54,7 +54,7 @@ function AStarFinder(opt) {
 }
 
 /**
- * Find and return the the path.
+ * Find and return the path.
  * @return {Array<Array<number>>} The path, including both start and
  *     end positions.
  */

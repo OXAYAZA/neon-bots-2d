@@ -61,7 +61,7 @@ class PathFinder {
 		if ( this.path && this.path.length ) {
 			this.path = Util.smoothenPath( this.grid, this.path );
 			this.direction = new Vector({ x: this.path[1][0] * 10 - this.body.x, y: this.path[1][1] * 10 - this.body.y });
-			// TODO переделать определение угла
+			// TODO redo angle definition
 			this.angle =
 				Math.atan2( this.body.d.x, this.body.d.y ) -
 				Math.atan2( this.direction.x, this.direction.y );

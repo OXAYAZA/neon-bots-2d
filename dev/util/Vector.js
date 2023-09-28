@@ -184,18 +184,18 @@ Vector.prototype.multiply = function ( scalar ) {
 }
 
 /**
- * Скалярное произведение векторов
- * @param {Vector} vec - второй вектор
- * @returns {number} - скаляр
+ * Dot product of vectors
+ * @param {Vector} vec - second vector
+ * @returns {number} - scalar
  */
 Vector.prototype.product = function ( vec ) {
 	return this.x * vec.x + this.y * vec.y;
 }
 
 /**
- * Определение косинуса угла между векторами
- * @param {Vector} vec - второй вектор
- * @returns {number} - косинус угла между векторами
+ * Determining the cosine of the angle between vectors
+ * @param {Vector} vec - second vector
+ * @returns {number} - cosine of the angle between vectors
  */
 Vector.prototype.angleCos = function ( vec ) {
 	return this.product( vec ) / ( this.length() * vec.length() );
@@ -232,9 +232,9 @@ Vector.prototype.setLength = function ( length ) {
 };
 
 /**
- * Отражение вектора
+ * Vector reflection
  * https://habr.com/ru/post/105882/
- * @param {Vector} vec - нормальный вектор для отражения
+ * @param {Vector} vec - normal vector for reflection
  */
 Vector.prototype.reflect = function ( vec ) {
 	this.subtract( vec.clone().multiply(2 ).multiply( this.product( vec ) / vec.product( vec ) ) );

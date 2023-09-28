@@ -3,51 +3,51 @@ import objectsIntersect from '../util/objectsIntersect.js';
 import Vector from "../util/Vector.js";
 
 class Obj {
-  map = null;                        // Карта к которой привязан объект
-  id;                                // Уникальный идентификатор объекта (обычно устанавливается холстом)
-  delta = 0;                         // Коррекция по времени
-  type = 'Object';                   // Тип объекта
-  collide = false;                   // Включение проверки столкновений для объекта
-  color = 'rgb( 255, 255, 255 )';    // Цвет заливки объекта
-  friction = .05;                    // Торможение объекта при движении
+  map = null;                        // Map to which the object is linked
+  id;                                // Unique object identifier (usually set by canvas)
+  delta = 0;                         // Time correction
+  type = 'Object';                   // Object type
+  collide = false;                   // Collision checking for an object
+  color = 'rgb( 255, 255, 255 )';    // Object fill color
+  friction = .05;                    // Braking an object while moving
 
-  gridArr = [];                      // Занимаемые ячейки сетки
-  gridPos = {                        // Позиция в сетке
+  gridArr = [];                      // Occupied grid cells
+  gridPos = {                        // Position on grid
     x: 0,
     y: 0,
   };
 
-  x = 0;                             // Координата X
-  y = 0;                             // Координата Y
-  a = 0;                             // Угол поворота объекта в радианах
+  x = 0;                             // X coordinate
+  y = 0;                             // Y coordinate
+  a = 0;                             // Angle of rotation of the object in radians
 
-  d = new Vector({ x: 1, y: 0 });    // Вектор направления объекта
-  v = new Vector({ x: 0, y: 0 });    // Вектор скорости объекта
+  d = new Vector({ x: 1, y: 0 });    // Object direction vector
+  v = new Vector({ x: 0, y: 0 });    // Object velocity vector
 
-  figureInitial = [                  // Фигура объекта (коллайдер?) при нулевом угле поворота
+  figureInitial = [                  // Object figure (collider?) at zero rotation angle
     { x: 1,  y: 1 },
     { x: 1,  y: -1 },
     { x: -1, y: -1 },
     { x: -1, y: 1 }
   ];
 
-  figureRaw;                         // Фигура объекта, после применения трансформаций но без учета позиции
-  figureFinal;                       // Финальная фигура объекта, после применения трансформаций и позиции
-  figureSegments;                    // Отрезки фигуры, для определения пересечений
+  figureRaw;                         // The figure of the object, after applying transformations but without taking into account the position
+  figureFinal;                       // The final figure of the object, after applying transformations and position
+  figureSegments;                    // Segments of a figure to determine intersections
 
-  onDead = null;                     // Посмертный колбек
-  onRender = null;                   // Колбек после отрисовки
+  onDead = null;                     // Death callback
+  onRender = null;                   // Rendering callback
 
-  renderOpts = {                     // Дополнительные параметры отрисовки
-    nVec: false,                     // Нормальные векторы отрезков фигуры
-    dVec: false,                     // Вектор направления
-    vVec: false                      // Вектор скорости
+  renderOpts = {                     // Additional rendering options
+    nVec: false,                     // Normal vectors of figure segments
+    dVec: false,                     // Direction vector
+    vVec: false                      // Velocity vector
   };
 
   constructor ( props = {} ) {
-    // TODO Добавить проверки параметров
+    // TODO Add parameter checks
 
-    // Установка новых свойств
+    // Setting new properties
     merge( this, props );
   }
 
@@ -113,7 +113,7 @@ class Obj {
     minY = ( minY - ( minY % this.map.cellSize ) ) / this.map.cellSize;
     maxY = ( maxY - ( maxY % this.map.cellSize ) ) / this.map.cellSize;
 
-    // TODO try должен быть исправлен ограничением игровой области
+    // TODO try should be fixed by limiting the play area
     try {
       for ( let x = minX; x <= maxX; x++ ) {
         for ( let y = minY; y <= maxY; y++ ) {
@@ -162,7 +162,7 @@ class Obj {
     this.map.ctx.closePath();
     this.map.ctx.fill();
 
-    // Нормальные векторы
+    // Normal vectors
     if ( this.renderOpts.nVec ) {
       this.figureSegments.forEach( ( segment ) => {
         let
@@ -183,7 +183,7 @@ class Obj {
       });
     }
 
-    // Вектор направления
+    // Direction vector
     if ( this.renderOpts.dVec ) {
       let dVec = new Vector( this.d ).setLength( 30 );
       this.map.ctx.strokeStyle = 'rgb( 50, 71, 210 )';
@@ -194,7 +194,7 @@ class Obj {
       this.map.ctx.stroke();
     }
 
-    // Вектор скорости
+    // Velocity vector
     if ( this.renderOpts.vVec ) {
       let vVec = new Vector( this.v ).multiply( .2 );
       this.map.ctx.strokeStyle = 'rgb( 210, 50, 50 )';

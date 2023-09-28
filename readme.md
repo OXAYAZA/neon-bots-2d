@@ -1,10 +1,11 @@
-# Canvas
+# Neon Bots 2D
 > Game similar to Asteroids
 
 ## To Do
-- [ ] Исправить способ определения угла между направлением юнита и направлением к цели (`bots/Simple.js`)
-- [ ] Исправить проблему с тач управлением, определять конкретные точки прикосновения
-- [ ] Разделить способы управления (клавиатура + мышь, тач, геймпад)
-- [ ] Доработать/переработать схему управления из "относительно юнита" в "относительно вьюпорта"
-- [ ] [Управление с геймпада](https://developer.mozilla.org/ru/docs/Web/API/Gamepad_API/Using_the_Gamepad_API)
-- [ ] [Pathfinding](https://www.npmjs.com/package/pathfinding) и [heap](https://www.npmjs.com/package/heap) + [пример](http://qiao.github.io/PathFinding.js/visual/)
+- [ ] Use TypeScript and/or JSDoc
+- [ ] Fix the way the angle between the unit's direction and the direction to the target is determined (`bots/Simple.js`)
+- [ ] Fix a problem with touch controls, identify specific touchpoints
+- [ ] Separate control methods (keyboard + mouse, touch, gamepad)
+- [ ] Improve/rework the control scheme from “relative to the unit” to “relative to the viewport”
+- [ ] [Gamepad control](https://developer.mozilla.org/ru/docs/Web/API/Gamepad_API/Using_the_Gamepad_API)
+- [ ] [Pathfinding](https://www.npmjs.com/package/pathfinding) и [heap](https://www.npmjs.com/package/heap) + [sample](http://qiao.github.io/PathFinding.js/visual/)

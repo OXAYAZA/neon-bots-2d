@@ -64,7 +64,7 @@ class ControlType2 {
 			this.body.shot();
 		}
 
-		// TODO Тач управление
+		// TODO Touch control
 		// if ( window.directionControllerOffset.x < -.5 ) {
 		// 	this.body.rotateLeft();
 		// }

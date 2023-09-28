@@ -1,7 +1,8 @@
 {
-  "name": "Canvas",
+  "name": "Neon Bots 2D",
   "version": "0.1.0",
-  "description": "Canvas Sample",
+  "private": true,
+  "description": "Game similar to Asteroids",
   "main": "server.js",
   "scripts": {
     "server": "node server.js"
@@ -9,6 +10,6 @@
   "author": "OXAYAZA",
   "license": "UNLICENSED",
   "dependencies": {
-    "oxyz-express": "1.0.3"
+    "oxyz-express": "1.0.4"
   }
 }
