@@ -38,14 +38,14 @@ class Map {
 		obj.id = obj.id || Math.random().toString( 36 ).substr( 2, 9 );
 		obj.map = this;
 		this.objects[ obj.id ] = obj;
-		if ( obj.collide ) this.collisionLayer[ obj.id ] = obj;
+		if ( obj.canCollide ) this.collisionLayer[ obj.id ] = obj;
 		if ( obj.type === 'Unit' ) this.unitLayer[ obj.id ] = obj;
 		obj.live();
 	};
 
 	remove ( obj ) {
 		delete this.objects[ obj.id ];
-		if ( obj.collide ) delete this.collisionLayer[ obj.id ];
+		if ( obj.canCollide ) delete this.collisionLayer[ obj.id ];
 		if ( obj.type === 'Unit' ) delete this.unitLayer[ obj.id ];
 	};
 
@@ -69,9 +69,22 @@ class Map {
 				let u2 = this.collisionLayer[ u2ID ];
 				if ( u1 === u2 || !u2.figureSegments ) continue;
 
-				if ( objectsIntersect( u1, u2 ) ) {
-					if ( u1.collide ) u1.collision( u2 );
-					if ( u2.collide ) u2.collision( u1 );
+				let intersectionSegments = objectsIntersect( u1, u2 );
+
+				if ( intersectionSegments ) {
+					if ( u1.canCollide ) {
+						u1.collide = {
+							obj: u2,
+							segment: intersectionSegments.segment2
+						};
+					}
+
+					if ( u2.canCollide ) {
+						u2.collide = {
+							obj: u2,
+							segment: intersectionSegments.segment1
+						};
+					}
 				}
 			}
 		}

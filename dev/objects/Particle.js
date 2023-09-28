@@ -37,7 +37,6 @@ class Particle extends Obj {
     this.hp -= this.delta;
 
     this.move();
-    this.rotate();
     this.resizeFigure();
     this.rotateFigure( true );
     this.applyPosition();

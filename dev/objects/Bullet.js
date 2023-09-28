@@ -6,7 +6,7 @@ import Particle from "./Particle.js";
 class Bullet extends Obj {
   type = 'Bullet';
   color = 'rgb( 255, 0, 0 )';
-  collide = true;
+  canCollide = true;
   damage = 10;
   hpInitial = 1;
   figureInitial = [
@@ -23,31 +23,34 @@ class Bullet extends Obj {
     this.hp = this.hpInitial;
   }
 
-  collision ( obj ) {
-    if ( 'hp' in obj ) {
-      obj.hp -= this.damage;
-    }
+  collision () {
+    if ( this.collide ) {
+      if ( 'hp' in this.collide.obj ) {
+        this.collide.obj.hp -= this.damage;
+      }
 
-    for ( let i = 0; i < 10; i++ ) {
-      this.map.add( new Particle({
-        color: this.color,
-        x: this.x,
-        y: this.y,
-        d: ( new Vector( this.d ) ).rotateD( 180 ),
-        v: ( new Vector( this.v ) ).rotateD( 180 + ( Math.random() - .5 ) * 45 ).multiply( Math.random() * .5 ),
-        size: 2
-      }));
-    }
+      for ( let i = 0; i < 10; i++ ) {
+        this.map.add( new Particle({
+          color: this.color,
+          x: this.x,
+          y: this.y,
+          d: ( new Vector( this.d ) ).rotateD( 180 ),
+          v: ( new Vector( this.v ) ).rotateD( 180 + ( Math.random() - .5 ) * 45 ).multiply( Math.random() * .5 ),
+          size: 2
+        }));
+      }
 
-    this.die();
+      this.die();
+      this.collide = false;
+    }
   }
 
   live ( delta = 0 ) {
     this.delta = delta;
     this.hp -= this.delta;
 
+    this.collision();
     this.move();
-    this.rotate();
     this.rotateFigure();
     this.applyPosition();
     this.calcSegments();

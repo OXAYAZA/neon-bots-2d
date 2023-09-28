@@ -7,7 +7,8 @@ class Obj {
   id;                                // Unique object identifier (usually set by canvas)
   delta = 0;                         // Time correction
   type = 'Object';                   // Object type
-  collide = false;                   // Collision checking for an object
+  canCollide = false;                // Collision checking for an object
+  collide = false;                   // Is object colliding now
   color = 'rgb( 255, 255, 255 )';    // Object fill color
   friction = .05;                    // Braking an object while moving
 
@@ -23,6 +24,7 @@ class Obj {
 
   d = new Vector({ x: 1, y: 0 });    // Object direction vector
   v = new Vector({ x: 0, y: 0 });    // Object velocity vector
+  e = 0;                             // Object angle velocity
 
   figureInitial = [                  // Object figure (collider?) at zero rotation angle
     { x: 1,  y: 1 },
@@ -41,7 +43,8 @@ class Obj {
   renderOpts = {                     // Additional rendering options
     nVec: false,                     // Normal vectors of figure segments
     dVec: false,                     // Direction vector
-    vVec: false                      // Velocity vector
+    vVec: false,                     // Velocity vector
+    rVec: false                      // Rotation vector
   };
 
   constructor ( props = {} ) {
@@ -86,9 +89,8 @@ class Obj {
 
     this.x = this.x + ( this.v.x * this.delta );
     this.y = this.y + ( this.v.y * this.delta );
-  }
 
-  rotate () {
+    this.d.rotate( this.e );
     this.a = this.d.angle();
   }
 
@@ -130,15 +132,27 @@ class Obj {
     } catch ( error ) {}
   }
 
-  collision ( obj ) {
+  collision () {
+    if ( this.collide ) {
+      if ( this.collide.segment ) {
+        let
+          x1 = this.collide.segment[0].x,
+          x2 = this.collide.segment[1].x,
+          y1 = this.collide.segment[0].y,
+          y2 = this.collide.segment[1].y,
+          vec = new Vector({ x: x2 - x1, y: y2 - y1 }).rotateD( -90 ).setLength( 10 );
 
+        this.v.reflect( vec );
+      }
+      this.collide = false;
+    }
   }
 
   live ( delta = 0 ) {
     this.delta = delta;
 
+    this.collision();
     this.move();
-    this.rotate();
     this.rotateFigure();
     this.applyPosition();
     this.calcSegments();
@@ -152,6 +166,7 @@ class Obj {
 
   render ( offset ) {
     this.map.ctx.fillStyle = this.color;
+    this.map.ctx.strokeStyle = 'rgb( 0, 0, 0 )';
     this.map.ctx.beginPath();
 
     this.figureFinal.forEach( ( point, index ) => {
@@ -161,6 +176,7 @@ class Obj {
 
     this.map.ctx.closePath();
     this.map.ctx.fill();
+    this.map.ctx.stroke();
 
     // Normal vectors
     if ( this.renderOpts.nVec ) {
@@ -205,6 +221,21 @@ class Obj {
       this.map.ctx.stroke();
     }
 
+    // Rotation vector
+    if ( this.renderOpts.rVec ) {
+      this.figureFinal.forEach( ( point ) => {
+        let vec = new Vector({ x: point.x - this.x, y: point.y - this.y }).rotateD( 90 ).setLength( this.e * 100 );
+
+        this.map.ctx.strokeStyle = 'rgb(210,183,50)';
+        this.map.ctx.beginPath();
+        // this.map.ctx.moveTo( offset.x + this.x, offset.y + this.y );
+        this.map.ctx.moveTo( offset.x + point.x, offset.y + point.y );
+        this.map.ctx.lineTo( offset.x + point.x + vec.x, offset.y + point.y + vec.y );
+        this.map.ctx.closePath();
+        this.map.ctx.stroke();
+      });
+    }
+
     if ( this.onRender instanceof Function ) this.onRender.call( this );
   }
 
@@ -214,7 +245,7 @@ class Obj {
       delta: this.delta,
       type: this.type,
       gridPos: this.gridPos,
-      collide: this.collide,
+      canCollide: this.canCollide,
       color: this.color,
       x: this.x,
       y: this.y,

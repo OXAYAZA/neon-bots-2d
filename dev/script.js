@@ -5,9 +5,12 @@ import Vector from './util/Vector.js';
 
 import Wall from './objects/Wall.js';
 import Particle from './objects/Particle.js';
+import Bullet from './objects/Bullet.js';
 import Unit from './objects/Unit.js';
 import Dummy from './objects/Dummy.js';
+
 import Simple from './bots/Simple.js';
+import Turret from './bots/Turret.js';
 import PathFinder from './bots/PathFinder.js';
 import ControlType2 from './bots/ControlType2.js';
 
@@ -31,13 +34,12 @@ window.addEventListener( 'DOMContentLoaded', function () {
 
 	window.spawnHero = function spawnHero () {
 		hero = window.hero = new Unit({
-			// mind: ControlType2,
-			fraction: 'ally',
+			mind: ControlType2,
+			// fraction: 'ally',
 			hpInitial: 1000000,
-			x: map.width / 2,
-			y: map.height - 50,
+			x: 750,
+			y: 350,
 			d: new Vector({ x: 0, y: -1 }),
-			v: new Vector({ x: 0, y: -map.height / 2 }),
 			figureInitial: [
 				{ x: 0,  y: 0 },
 				{ x: -20,  y: -20 },
@@ -47,7 +49,7 @@ window.addEventListener( 'DOMContentLoaded', function () {
 				{ x: -20,  y: 20 }
 			],
 			bulletSlots: [
-				{ x: 45, y: 0, a: 0 }
+				{ x: 45, y: 0, a: 0, s: 0 }
 			]
 		});
 
@@ -55,16 +57,37 @@ window.addEventListener( 'DOMContentLoaded', function () {
 		return hero;
 	}
 
-	function spawnAlly () {
+	function spawnTurret () {
 		if ( Object.keys( allies ).length < 1 ) {
 			let unit = new Unit({
-				mind:       Simple,
+				mind:       Turret,
 				fraction:   'ally',
 				color:      'rgb(255,230,0)',
-				x:          Math.random() * map.width,
-				y:          map.height,
-				d:          (new Vector( { x: 0, y: -1 } )),
-				v:          (new Vector( { x: 0, y: -500 * Math.random() } )),
+				x:          750,
+				y:          550,
+				figureInitial: [
+					{ x: -10, y: -5 },
+					{ x: -5, y: -10 },
+					{ x: 5, y: -10 },
+					{ x: 10, y: -5 },
+
+					{ x: 15, y: -5 },
+					{ x: 15, y: -1 },
+					{ x: 10, y: -1 },
+
+					{ x: 10, y: 1 },
+					{ x: 15, y: 1 },
+					{ x: 15, y: 5 },
+
+					{ x: 10, y: 5 },
+					{ x: 5, y: 10 },
+					{ x: -5, y: 10 },
+					{ x: -10, y: 5 },
+				],
+				bulletSlots: [
+					{ x: 20, y: -4, a: 0, s: 0 },
+					{ x: 20, y: 4, a: 0, s: 0 }
+				],
 				onDead:     function () {
 					delete allies[ this.id ];
 				}
@@ -83,7 +106,7 @@ window.addEventListener( 'DOMContentLoaded', function () {
 				fraction: 'enemy',
 				color:    'rgb(255, 0, 100)',
 				x:        Math.random() * map.width,
-				y:        50,
+				y:        30,
 				d:        (new Vector( { x: 0, y: 1 } )),
 				v:        (new Vector( { x: 0, y: 500 } )),
 				onDead:   function () {
@@ -103,6 +126,17 @@ window.addEventListener( 'DOMContentLoaded', function () {
 			x: Math.random() * map.width,
 			y: Math.random() * map.height,
 			hpInitial: Math.random() * 5
+		}));
+	}
+
+	window.spawnBullet = function spawnBullet ( x, y, a = 0, hp = 2 ) {
+		map.add( new Bullet({
+			x: x,
+			y: y,
+			friction: 0,
+			hpInitial: hp,
+			d: new Vector({ x: 1, y: 0 }).rotateD( a ),
+			v: new Vector({ x: 500, y: 0 }).rotateD( a )
 		}));
 	}
 
@@ -207,9 +241,13 @@ window.addEventListener( 'DOMContentLoaded', function () {
 		});
 	});
 
+	spawnWall( 105, 405, 800, 415 );
+	spawnWall( 105, 420, 115, 530 );
+	spawnWall( 290, 460, 300, 599 );
+
 	spawnHero();
-	spawnWall( 105, 405, 695, 415 );
-	// setInterval( spawnAlly, 5000 );
+	spawnTurret();
+	setInterval( spawnTurret, 5000 );
 	setInterval( spawnEnemy, 1000 );
 	setInterval( spawnParticle, 50 );
 });

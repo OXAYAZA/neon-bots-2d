@@ -87,7 +87,10 @@ class ControlType2 {
 	}
 
 	info () {
-		return null;
+		return {
+			tAngle: this.angle,
+			e: this.body.e
+		};
 	}
 }
 

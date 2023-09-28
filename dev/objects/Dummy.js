@@ -2,7 +2,6 @@ import merge from "../util/merge.js";
 import Unit from './Unit.js';
 
 class Dummy extends Unit {
-	mass = 200;
 	hpInitial = 10;
 	reloadTime = .4;
 	figureInitial = [
@@ -15,7 +14,7 @@ class Dummy extends Unit {
 		{ x: -10, y: 10 },
 	];
 	bulletSlots = [
-		{ x: 30, y: 0, a: 0 }
+		{ x: 30, y: 0, a: 0, s: 10 }
 	];
 
 	constructor ( props ) {

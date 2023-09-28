@@ -21,7 +21,11 @@ export default function objectsIntersect ( obj1, obj2 ) {
 				);
 
 			if ( tmp ) {
-				intersect = true;
+				intersect = {
+					type: 'segment',
+					segment1: segment1,
+					segment2: segment2
+				};
 				break outer;
 			}
 		}
@@ -34,7 +38,10 @@ export default function objectsIntersect ( obj1, obj2 ) {
 				tmp = pointInPoly( point.x, point.y, obj2.figureFinal );
 
 			if ( tmp ) {
-				intersect = true;
+				intersect = {
+					type: 'entry',
+					point: point
+				};
 				break;
 			}
 		}
@@ -47,7 +54,10 @@ export default function objectsIntersect ( obj1, obj2 ) {
 				tmp = pointInPoly( point.x, point.y, obj1.figureFinal );
 
 			if ( tmp ) {
-				intersect = true;
+				intersect = {
+					type: 'entry',
+					point: point
+				};
 				break;
 			}
 		}
