@@ -2,16 +2,8 @@
 *.map
 *.db
 
-# Ignoring everything at the root of the project
-/*
+# Ignoring packages
+/node_modules
 
-# Project files
-!/.gitignore
-!/config.js
-!/server.js
-!/package.json
-!/README.md
-
-# Project folders
-!/dev
-!/dist
+# Ignoring IDE project files
+/.idea
