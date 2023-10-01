@@ -27,7 +27,7 @@ class PathFinder {
 		this.target = null;
 		this.distance = Infinity;
 
-		// TODO глобальная переменная window.map это плохо
+		// TODO global variable window.map is bad
 		Object.keys( window.map.unitLayer ).map( ( item ) => {
 			let target = window.map.unitLayer[ item ];
 			let distance = Math.sqrt( Math.pow( target.x - this.body.x, 2 ) + Math.pow( target.y - this.body.y, 2 ) );

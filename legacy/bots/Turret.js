@@ -15,7 +15,7 @@ class Turret {
 		this.target = null;
 		this.distance = Infinity;
 
-		// TODO глобальная переменная window.map это плохо
+		// TODO global variable window.map is bad
 		Object.keys( window.map.unitLayer ).map( ( item ) => {
 			let target = window.map.unitLayer[ item ];
 			let distance = Math.sqrt( Math.pow( target.x - this.body.x, 2 ) + Math.pow( target.y - this.body.y, 2 ) );
@@ -30,7 +30,7 @@ class Turret {
 	calculate () {
 		this.direction = new Vector({ x: this.target.x - this.body.x, y: this.target.y - this.body.y });
 		this.distance = this.direction.length();
-		// TODO переделать определение угла
+		// TODO redo angle definition
 		// this.angle = Math.acos(
 		// 	( ( this.direction.x * this.body.d.x ) + ( this.direction.y * this.body.d.y ) ) /
 		// 	( this.direction.length() * this.body.d.length() )

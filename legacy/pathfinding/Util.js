@@ -16,8 +16,8 @@ function backtrace(node) {
 /**
  * Backtrace from start and end node, and return the path.
  * (including both start and end nodes)
- * @param {Node}
- * @param {Node}
+ * @param {Node} nodeA
+ * @param {Node} nodeB
  */
 function biBacktrace(nodeA, nodeB) {
 	var pathA = backtrace(nodeA),
