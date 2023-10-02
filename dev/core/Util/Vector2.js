@@ -158,6 +158,10 @@ class Vector2 {
     return new Vector2({x: 0, y: 0});
   };
 
+  static one() {
+    return new Vector2({x: 1, y: 1});
+  };
+
   static up() {
     return new Vector2({x: 0, y: -1});
   }

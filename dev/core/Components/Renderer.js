@@ -70,6 +70,7 @@ class Renderer extends BaseComponent {
     if(!transform) return;
 
     let position = transform.position;
+    let scale = transform.scale;
     let angle = transform.direction.angle();
 
     if(!this.figurePoints.length) return;
@@ -79,21 +80,26 @@ class Renderer extends BaseComponent {
     ctx.beginPath();
 
     this.figurePoints.forEach((point, index) => {
-      let rotatedPoint = new Vector2({
-        x: point.x * Math.cos(angle) - point.y * Math.sin(angle),
-        y: point.y * Math.cos(angle) + point.x * Math.sin(angle)
+      let transformedPoint = new Vector2({
+        x: point.x * scale.x,
+        y: point.y * scale.y
+      });
+
+      transformedPoint = new Vector2({
+        x: transformedPoint.x * Math.cos(angle) - transformedPoint.y * Math.sin(angle),
+        y: transformedPoint.y * Math.cos(angle) + transformedPoint.x * Math.sin(angle)
       });
 
       if(index) {
         ctx.lineTo(
-          offset.x + position.x - cameraPosition.x + rotatedPoint.x,
-          offset.y + position.y - cameraPosition.y + rotatedPoint.y
+          offset.x + position.x - cameraPosition.x + transformedPoint.x,
+          offset.y + position.y - cameraPosition.y + transformedPoint.y
         );
       }
       else {
         ctx.moveTo(
-          offset.x + position.x - cameraPosition.x + rotatedPoint.x,
-          offset.y + position.y - cameraPosition.y + rotatedPoint.y
+          offset.x + position.x - cameraPosition.x + transformedPoint.x,
+          offset.y + position.y - cameraPosition.y + transformedPoint.y
         );
       }
     });
