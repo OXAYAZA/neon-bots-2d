@@ -86,7 +86,7 @@ class Vector2 {
    * @param {Vector2} vec - Another vector.
    * @returns {number} - Scalar.
    */
-  dot( vec ) {
+  dot(vec) {
     return this.x * vec.x + this.y * vec.y;
   }
 
@@ -95,7 +95,7 @@ class Vector2 {
    * @param {Vector2} vec - another vector.
    * @returns {number} - Cosine of the angle between vectors.
    */
-  angleCos( vec ) {
+  angleCos(vec ) {
     return this.dot(vec) / (this.length() * vec.length());
   }
 

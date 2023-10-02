@@ -1,5 +1,6 @@
 import Canvas from "./Canvas.js";
 import Scene from "./Scene.js";
+import Input from "./Modules/Input.js";
 
 class Engine {
   /**
@@ -19,6 +20,12 @@ class Engine {
    * @type {Scene}
    */
   scene;
+
+  /**
+   * Input module.
+   * @type {Input}
+   */
+  input;
 
   /**
    * Active camera for rendering.
@@ -56,7 +63,7 @@ class Engine {
    * @param {number} [props.fixedUpdateInterval] - The time interval for a fixed update in seconds.
    */
   constructor(props = {}) {
-    if(Engine.Instance) throw new Error("Should be only one instance of Main");
+    if(Engine.Instance) throw new Error("Should be only one instance of Engine");
 
     props = {
       fixedUpdateInterval: 0.02,
@@ -68,6 +75,7 @@ class Engine {
     Engine.Instance = this;
     this.canvas = new Canvas(document.querySelector('#root'))
     this.scene = new Scene();
+    this.input = new Input();
 
     this.startFixedUpdate();
   }

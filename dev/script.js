@@ -2,6 +2,7 @@ import Engine from "./core/Engine.js";
 import BaseObject from "./core/BaseObject.js";
 import {Transform, Renderer, Camera} from "./core/Components/index.js";
 import Unit from "./custom/Unit.js";
+import Cursor from "./custom/Cursor.js";
 
 // Onscreen debug
 window.debug = function (data) {
@@ -9,17 +10,6 @@ window.debug = function (data) {
   window.data = {...window.data, ...data };
   document.getElementById("debug").innerHTML = JSON.stringify(data, null, 2);
 }
-
-// Temporary control
-window.keys = {};
-
-document.addEventListener('keydown', function(event) {
-  window.keys[event.code] = true;
-});
-
-document.addEventListener('keyup', function(event) {
-  window.keys[event.code] = false;
-});
 
 window.addEventListener("DOMContentLoaded", () => {
   window.Engine = new Engine();
@@ -52,6 +42,19 @@ window.addEventListener("DOMContentLoaded", () => {
     ]
   }));
   player.addComponent(new Unit());
+
+  let cursor = new BaseObject("Cursor");
+  cursor.addComponent(new Transform());
+  cursor.addComponent(new Renderer({
+    fillColor: 'white',
+    figurePoints: [
+      { x: 2,  y: 2 },
+      { x: -2,  y: 2 },
+      { x: -2,  y: -2 },
+      { x: 2,  y: -2 },
+    ]
+  }));
+  cursor.addComponent(new Cursor());
 
   console.log(Engine.Instance);
 });

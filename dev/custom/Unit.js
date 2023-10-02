@@ -1,5 +1,6 @@
 import BaseComponent from "../core/Components/BaseComponent.js";
 import Vector2 from "../core/Util/Vector2.js";
+import Engine from "../core/Engine.js";
 
 class Unit extends BaseComponent {
   requiredComponents = ["Transform"];
@@ -11,11 +12,12 @@ class Unit extends BaseComponent {
     if(!position) return;
 
     let speed = 300 * fixedDeltaTime;
+    let input = Engine.Instance.input;
 
-    if(window.keys['KeyW']) position.add(new Vector2({x: 0, y: -speed}));
-    if(window.keys['KeyS']) position.add(new Vector2({x: 0, y: speed}));
-    if(window.keys['KeyA']) position.add(new Vector2({x: -speed, y: 0}));
-    if(window.keys['KeyD']) position.add(new Vector2({x: speed, y: 0}));
+    if(input.keys['KeyW']) position.add(new Vector2({x: 0, y: -speed}));
+    if(input.keys['KeyS']) position.add(new Vector2({x: 0, y: speed}));
+    if(input.keys['KeyA']) position.add(new Vector2({x: -speed, y: 0}));
+    if(input.keys['KeyD']) position.add(new Vector2({x: speed, y: 0}));
   }
 }
 
