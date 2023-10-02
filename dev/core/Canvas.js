@@ -61,7 +61,7 @@ class Canvas {
     });
 
     for(const [_, obj] of Object.entries(objects)) {
-      obj.getComponent("Renderer")?.render(this.ctx, offset, cameraPosition);
+      if(obj) obj.getComponent("Renderer")?.render(this.ctx, offset, cameraPosition);
     }
   }
 }

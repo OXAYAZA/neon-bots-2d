@@ -131,6 +131,7 @@ class Vector2 {
    */
   setLength(length) {
     let c = length / Math.sqrt(this.x * this.x + this.y * this.y);
+    if(c === Infinity || isNaN(c)) c = 0;
     this.x *= c;
     this.y *= c;
     return this;
@@ -158,11 +159,11 @@ class Vector2 {
   };
 
   static up() {
-    return new Vector2({x: 0, y: 1});
+    return new Vector2({x: 0, y: -1});
   }
 
   static down() {
-    return new Vector2({x: 0, y: -1});
+    return new Vector2({x: 0, y: 1});
   }
 
   static right() {

@@ -1,4 +1,5 @@
 import BaseComponent from "./BaseComponent.js";
+import Vector2 from "../Util/Vector2.js";
 
 class Renderer extends BaseComponent {
   /**
@@ -65,8 +66,11 @@ class Renderer extends BaseComponent {
    * @param {Vector2} cameraPosition - Camera position on scene.
    */
   render(ctx, offset, cameraPosition) {
-    let position = this.object.getComponent("Transform")?.position;
-    if(!position) return;
+    let transform = this.object?.getComponent("Transform");
+    if(!transform) return;
+
+    let position = transform.position;
+    let angle = transform.direction.angle();
 
     if(!this.figurePoints.length) return;
 
@@ -75,16 +79,21 @@ class Renderer extends BaseComponent {
     ctx.beginPath();
 
     this.figurePoints.forEach((point, index) => {
+      let rotatedPoint = new Vector2({
+        x: point.x * Math.cos(angle) - point.y * Math.sin(angle),
+        y: point.y * Math.cos(angle) + point.x * Math.sin(angle)
+      });
+
       if(index) {
         ctx.lineTo(
-          offset.x + position.x - cameraPosition.x + point.x,
-          offset.y + position.y - cameraPosition.y + point.y
+          offset.x + position.x - cameraPosition.x + rotatedPoint.x,
+          offset.y + position.y - cameraPosition.y + rotatedPoint.y
         );
       }
       else {
         ctx.moveTo(
-          offset.x + position.x - cameraPosition.x + point.x,
-          offset.y + position.y - cameraPosition.y + point.y
+          offset.x + position.x - cameraPosition.x + rotatedPoint.x,
+          offset.y + position.y - cameraPosition.y + rotatedPoint.y
         );
       }
     });

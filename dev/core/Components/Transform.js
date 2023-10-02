@@ -17,7 +17,6 @@ class Transform extends BaseComponent {
   /**
    * Object direction.
    * @type {Vector2}
-   * TODO
    */
   direction;
 
@@ -30,10 +29,12 @@ class Transform extends BaseComponent {
 
   /**
    * @param {Vector2} [position] - Initial position.
+   * @param {Vector2} [direction] - Initial direction.
    */
-  constructor(position = Vector2.zero()) {
+  constructor(position = Vector2.zero(), direction = Vector2.zero()) {
     super();
     this.position = position;
+    this.direction = direction;
   }
 }
 

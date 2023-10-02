@@ -87,6 +87,8 @@ class Engine {
     let currentTime = Number(performance.now()) / 1000;
     this.fixedDeltaTime = currentTime - this.lastTime;
 
+    this.input.fixedUpdate();
+
     for(const [_, object] of Object.entries(this.scene.objects)) {
       if(object) {
         for(const [_, component] of Object.entries(object.components)) {
@@ -94,6 +96,8 @@ class Engine {
         }
       }
     }
+
+    this.scene.cleanObjects();
 
     this.lastTime = currentTime;
   }

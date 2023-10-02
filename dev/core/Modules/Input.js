@@ -1,4 +1,5 @@
 import Engine from "../Engine.js";
+import Vector2 from "../Util/Vector2.js";
 
 class Input {
   /**
@@ -11,8 +12,8 @@ class Input {
   /**
    * Mouse state object.
    * @typedef {Object} MouseState
-   * @prop {number} canvasX - Horizontal cursor position on canvas.
-   * @prop {number} canvasY - Vertical cursor position on canvas.
+   * @prop {Vector2} canvasPos - Cursor position on canvas.
+   * @prop {Vector2} scenePos - Cursor position relative to the beginning of the scene.
    * @prop {boolean} 0 - Left mouse button press state.
    * @prop {boolean} 1 - Middle mouse button press state.
    * @prop {boolean} 2 - Right mouse button press state.
@@ -23,8 +24,8 @@ class Input {
    * @type {MouseState}
    */
   mouse = {
-    canvasX: 0,
-    canvasY: 0,
+    canvasPos: Vector2.zero(),
+    scenePos: Vector2.zero(),
     0: false,
     1: false,
     2: false
@@ -69,8 +70,8 @@ class Input {
    * @param {MouseEvent} event
    */
   mouseMoveHandler(event) {
-    this.mouse.canvasX = event.clientX;
-    this.mouse.canvasY = event.clientY;
+    this.mouse.canvasPos.x = event.clientX;
+    this.mouse.canvasPos.y = event.clientY;
   }
 
   /**
@@ -91,6 +92,21 @@ class Input {
   mouseUpHandler(event) {
     event.preventDefault();
     this.mouse[event.button] = false;
+  }
+
+  /**
+   *
+   */
+  fixedUpdate() {
+    let canvasRect = Engine.Instance?.canvas?.rect;
+    if(!canvasRect) return;
+
+    let cameraPosition = Engine.Instance?.activeCamera?.object?.getComponent("Transform")?.position;
+    if(!cameraPosition) return;
+
+    // TODO: These values are delayed by one frame.
+    this.mouse.scenePos.x = cameraPosition.x - canvasRect.width / 2 + this.mouse.canvasPos.x;
+    this.mouse.scenePos.y = cameraPosition.y - canvasRect.height / 2 + this.mouse.canvasPos.y;
   }
 }
 
