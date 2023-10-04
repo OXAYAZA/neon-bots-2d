@@ -30,10 +30,15 @@ class BaseComponent {
   requiredComponents = [];
 
   /**
-   * Event function that is called at fixed intervals.
+   * Event function that is called at fixed intervals. This method is used by core, don't use it directly.
    * @param {number} fixedDeltaTime
    */
   fixedUpdate(fixedDeltaTime) {}
+
+  /**
+   * Event function for drawing Gizmos. This method is used by canvas, don't use it directly.
+   */
+  onDrawGizmos() {}
 }
 
 export default BaseComponent;

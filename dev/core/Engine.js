@@ -1,6 +1,7 @@
 import Canvas from "./Canvas.js";
 import Scene from "./Scene.js";
 import Input from "./Modules/Input.js";
+import BaseEvent from "./Modules/BaseEvent.js";
 
 class Engine {
   /**
@@ -59,6 +60,12 @@ class Engine {
   fixedDeltaTime = 0;
 
   /**
+   * Fixed update event for subscribing, triggered immediately after everything in the scene is updated.
+   * @type {BaseEvent}
+   */
+  onFixedUpdate = new BaseEvent();
+
+  /**
    * @param {Object} [props] - Properties object.
    * @param {number} [props.fixedUpdateInterval] - The time interval for a fixed update in seconds.
    */
@@ -98,6 +105,8 @@ class Engine {
     }
 
     this.scene.cleanObjects();
+
+    this.onFixedUpdate.trigger(this);
 
     this.lastTime = currentTime;
   }

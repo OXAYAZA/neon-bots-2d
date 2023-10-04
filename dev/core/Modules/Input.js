@@ -104,7 +104,7 @@ class Input {
     let cameraPosition = Engine.Instance?.activeCamera?.object?.getComponent("Transform")?.position;
     if(!cameraPosition) return;
 
-    // TODO: These values are delayed by one frame.
+    // TODO: These values are delayed by one fixedUpdate iteration.
     this.mouse.scenePos.x = cameraPosition.x - canvasRect.width / 2 + this.mouse.canvasPos.x;
     this.mouse.scenePos.y = cameraPosition.y - canvasRect.height / 2 + this.mouse.canvasPos.y;
   }

@@ -82,6 +82,17 @@ class Vector2 {
   }
 
   /**
+   * Multiply vector coordinates by other vector coordinates.
+   * @param {Vector2} vector - Another vector.
+   * @return {this} - Current vector.
+   */
+  scaleByVector(vector) {
+    this.x *= vector.x;
+    this.y *= vector.y;
+    return this;
+  }
+
+  /**
    * Determining the dot product of the current vector and another vector.
    * @param {Vector2} vec - Another vector.
    * @returns {number} - Scalar.

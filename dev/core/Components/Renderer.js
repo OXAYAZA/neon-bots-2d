@@ -56,7 +56,11 @@ class Renderer extends BaseComponent {
 
     this.fillColor = props.fillColor;
     this.strokeColor = props.strokeColor;
-    this.figurePoints = props.figurePoints;
+
+    this.figurePoints = props.figurePoints.map(point => {
+      if(!(point instanceof Vector2)) return new Vector2(point);
+      return point;
+    });
   }
 
   /**
@@ -66,6 +70,8 @@ class Renderer extends BaseComponent {
    * @param {Vector2} cameraPosition - Camera position on scene.
    */
   render(ctx, offset, cameraPosition) {
+    if(!this.figurePoints.length) return;
+
     let transform = this.object?.getComponent("Transform");
     if(!transform) return;
 
@@ -73,35 +79,21 @@ class Renderer extends BaseComponent {
     let scale = transform.scale;
     let angle = transform.direction.angle();
 
-    if(!this.figurePoints.length) return;
-
     ctx.fillStyle = this.fillColor;
     ctx.strokeStyle = this.strokeColor;
     ctx.beginPath();
 
     this.figurePoints.forEach((point, index) => {
-      let transformedPoint = new Vector2({
-        x: point.x * scale.x,
-        y: point.y * scale.y
-      });
+      let transformedPoint = point
+        .clone()
+        .scaleByVector(scale)
+        .rotate(angle)
+        .add(offset)
+        .add(position)
+        .subtract(cameraPosition);
 
-      transformedPoint = new Vector2({
-        x: transformedPoint.x * Math.cos(angle) - transformedPoint.y * Math.sin(angle),
-        y: transformedPoint.y * Math.cos(angle) + transformedPoint.x * Math.sin(angle)
-      });
-
-      if(index) {
-        ctx.lineTo(
-          offset.x + position.x - cameraPosition.x + transformedPoint.x,
-          offset.y + position.y - cameraPosition.y + transformedPoint.y
-        );
-      }
-      else {
-        ctx.moveTo(
-          offset.x + position.x - cameraPosition.x + transformedPoint.x,
-          offset.y + position.y - cameraPosition.y + transformedPoint.y
-        );
-      }
+      if(index) ctx.lineTo(transformedPoint.x, transformedPoint.y);
+      else ctx.moveTo(transformedPoint.x, transformedPoint.y);
     });
 
     ctx.closePath();

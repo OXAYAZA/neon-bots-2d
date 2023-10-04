@@ -26,7 +26,7 @@ class Control extends BaseComponent {
 
     position.add(velocity.normalize().scale(speed));
 
-    transform.direction = input.mouse.scenePos.subtract(transform.position).normalize();
+    transform.direction = input.mouse.scenePos.clone().subtract(transform.position).normalize();
   }
 }
 

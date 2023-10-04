@@ -21,6 +21,12 @@ class Canvas {
   rect;
 
   /**
+   * Draw components debug gizmos.
+   * @type {boolean}
+   */
+  drawGizmos = false;
+
+  /**
    * @param {HTMLCanvasElement} node - canvas element.
    */
   constructor(node) {
@@ -34,6 +40,7 @@ class Canvas {
   }
 
   /**
+   * @private
    * Update canvas dimensions.
    */
   resize() {
@@ -43,6 +50,7 @@ class Canvas {
   }
 
   /**
+   * @private
    * Render canvas frame.
    */
   render() {
@@ -60,8 +68,23 @@ class Canvas {
       y: this.rect.height / 2
     });
 
-    for(const [_, obj] of Object.entries(objects)) {
-      if(obj) obj.getComponent("Renderer")?.render(this.ctx, offset, cameraPosition);
+    for(const [_, object] of Object.entries(objects)) {
+      if(object) {
+        object.getComponent("Renderer")?.render(this.ctx, offset, cameraPosition);
+
+        if(this.drawGizmos) this.renderGizmos(object);
+      }
+    }
+  }
+
+  /**
+   * Render gizmos for components in object.
+   * @private
+   * @param {BaseObject} object
+   */
+  renderGizmos(object) {
+    for(const [_, component] of Object.entries(object.components)) {
+      if(component) component.onDrawGizmos();
     }
   }
 }

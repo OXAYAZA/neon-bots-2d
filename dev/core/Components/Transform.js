@@ -27,15 +27,24 @@ class Transform extends BaseComponent {
   scale;
 
   /**
-   * @param {Vector2} [position] - Initial position.
-   * @param {Vector2} [direction] - Initial direction.
-   * @param {Vector2} [scale] - Initial direction.
+   * @param {Object} [props] - Properties object.
+   * @param {Vector2} [props.position] - Initial position.
+   * @param {Vector2} [props.direction] - Initial direction.
+   * @param {Vector2} [props.scale] - Initial scale.
    */
-  constructor(position = Vector2.zero(), direction = Vector2.zero(), scale = Vector2.one()) {
+  constructor(props) {
     super();
-    this.position = position;
-    this.direction = direction;
-    this.scale = scale;
+
+    props = {
+      position: Vector2.zero(),
+      direction: Vector2.right(),
+      scale: Vector2.one(),
+      ...props
+    }
+
+    this.position = props.position;
+    this.direction = props.direction;
+    this.scale = props.scale;
   }
 }
 

@@ -1,6 +1,6 @@
 import Engine from "../core/Engine.js";
 import BaseObject from "../core/BaseObject.js";
-import {BaseComponent, Transform, Renderer} from "../core/Components/index.js";
+import {BaseComponent, Transform, Renderer, Collider} from "../core/Components/index.js";
 import Projectile from "./Projectile.js";
 
 class Gun extends BaseComponent {
@@ -24,7 +24,10 @@ class Gun extends BaseComponent {
     if(!transform) return;
 
     let projectile = new BaseObject("Projectile");
-    projectile.addComponent(new Transform(transform.position.clone(), transform.direction.clone()));
+    projectile.addComponent(new Transform({
+      position: transform.position.clone(),
+      direction: transform.direction.clone()
+    }));
     projectile.addComponent(new Renderer({
       strokeColor: 'black',
       fillColor: 'red',
@@ -35,6 +38,13 @@ class Gun extends BaseComponent {
         {x: 2, y: -2}
       ]
     }));
+    projectile.addComponent(new Collider([
+        {x: 2, y: 2},
+        {x: -2, y: 2},
+        {x: -2, y: -2},
+        {x: 2, y: -2}
+      ]
+    ));
     projectile.addComponent(new Projectile());
   }
 

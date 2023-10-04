@@ -1,6 +1,8 @@
 import {BaseComponent} from "../core/Components/index.js";
 
 class Projectile extends BaseComponent {
+  name = "Projectile";
+  requiredComponents = ["Transform", "Collider"];
   liveTime = 2;
 
   fixedUpdate(fixedDeltaTime) {
